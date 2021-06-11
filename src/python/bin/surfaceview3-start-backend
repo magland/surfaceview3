@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+
+import surfaceview3
+
+if __name__ == '__main__':
+    surfaceview3.start_backend_cli()
