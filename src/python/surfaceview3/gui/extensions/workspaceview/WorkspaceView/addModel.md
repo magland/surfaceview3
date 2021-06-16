@@ -1,6 +1,6 @@
 A *model* in surfaceview3 comprises a collection of surfaces and a collection of 3D vector fields that live in the same 3D space.
 
-To add a model to this workspace, run a Python script on the computer running the backend provider.
+To add a model to this workspace, run a Python script on the computer running the backend service.
 
 Here is an example script that requires that you have access to a .vtk file in unstructured grid format:
 

@@ -1,4 +1,4 @@
-import { useTask } from "../../../labbox"
+import { usePureCalculationTask } from "../../../labbox"
 
 type SurfaceInfo = {
     uri: string
@@ -21,7 +21,7 @@ export type ModelInfo = {
 }
 
 const useModelInfo = (modelUri: string | undefined) => {
-    const {returnValue: modelInfo, task} = useTask<ModelInfo>(modelUri ? 'get_model_info.8' : '', {model_uri: modelUri})
+    const {returnValue: modelInfo, task} = usePureCalculationTask<ModelInfo>(modelUri ? 'get_model_info.8' : '', {model_uri: modelUri})
     return {modelInfo, task}
 }
 

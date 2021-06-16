@@ -1,5 +1,5 @@
 import axios from "axios"
-import { UrlString } from "../../types/kacheryTypes"
+import { UrlString } from "../../kachery-js/types/kacheryTypes"
 import { randomAlphaString } from "../google/GoogleObjectStorageClient"
 
 export type HttpObjectStorageClientOpts = {

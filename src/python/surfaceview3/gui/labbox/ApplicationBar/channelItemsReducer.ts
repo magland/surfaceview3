@@ -1,5 +1,5 @@
 import packageName from "../packageName"
-import { ChannelName } from "../types/kacheryTypes"
+import { ChannelName } from "../kachery-js/types/kacheryTypes"
 
 const hardCodedChannelItems: ChannelItem[] = [
 ]

@@ -1,10 +1,10 @@
 import { AppBar, Toolbar } from '@material-ui/core';
 import React, { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import ChannelControl from './ChannelControl';
-import SelectChannel from '../channels/SelectChannel';
 import ModalWindow from './ModalWindow';
 import TaskMonitorControl from './TaskMonitor/TaskMonitorControl'
 import TaskMonitor from './TaskMonitor/TaskMonitor'
+import SelectChannel from '../../pages/Home/SelectChannel';
 
 const appBarHeight = 50
 

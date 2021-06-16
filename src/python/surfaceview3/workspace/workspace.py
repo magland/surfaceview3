@@ -24,13 +24,13 @@ class Workspace:
     @property
     def uri(self):
         q = f'?{self._query_string}' if self._query_string else ''
-        return f'workspace://{self._feed.get_feed_id()}{q}'
+        return f'workspace://{self._feed.feed_id}{q}'
     @property
     def feed_uri(self):
-        return self._feed.get_uri()
+        return self._feed.uri
     @property
     def feed_id(self):
-        return self._feed.get_feed_id()
+        return self._feed.feed_id
     @property
     def feed(self):
         return self._feed
@@ -51,7 +51,7 @@ class Workspace:
         if model_id in self._models:
             raise Exception(f'Duplicate model ID: {model_id}')
         model_uri = kc.store_json(model.serialize())
-        main_subfeed = self._feed.get_subfeed('main')
+        main_subfeed = self._feed.load_subfeed('main')
         main_subfeed.append_message({
             'action': {
                 'type': 'addModel',
@@ -63,7 +63,7 @@ class Workspace:
         self._models[model_id] = model
         return model_id
     def _load_models(self):
-        main_subfeed = self._feed.get_subfeed('main')
+        main_subfeed = self._feed.load_subfeed('main')
         main_subfeed.get_next_messages() # load them all
         main_subfeed.set_position(0)
         while True:
@@ -87,7 +87,7 @@ class Workspace:
 
 def create_workspace(*, label: Union[str, None]=None):
     feed = kc.create_feed()
-    feed_id = feed.get_feed_id()
+    feed_id = feed.feed_id
     workspace_uri = f'workspace://{feed_id}'
     W = load_workspace(workspace_uri)
     if label:

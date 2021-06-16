@@ -1,11 +1,12 @@
 import React from 'react'
 import { FunctionComponent } from "react"
-import { SelectChannelDialog, useVisible } from '../../labbox'
+import { useVisible } from '../../labbox'
 import './Home.css'
 import SignInSection from './SignInSection'
 import ChannelSection from './ChannelSection'
 import IntroSection from './IntroSection'
 import WorkspaceSection from './WorkspaceSection'
+import SelectChannelDialog from './SelectChannelDialog'
 
 type Props = {
     

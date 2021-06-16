@@ -1,5 +1,6 @@
 import { FunctionComponent, useMemo } from "react";
-import { BasePlugin, CalculationPool, ExtensionContext, usePlugins } from "../labbox";
+import { BasePlugin, ExtensionContext, usePlugins } from "../labbox";
+import { CalculationPool } from "../labbox/kachery-react/createCalculationPool";
 import { WorkspaceDispatch, WorkspaceState } from "./workspaceReducer";
 import { WorkspaceRoute, WorkspaceRouteDispatch } from './WorkspaceRoute';
 import { WorkspaceViewPlugin } from "./WorkspaceViewPlugin";

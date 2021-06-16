@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useMemo } from 'react';
-import { TaskStatusView, useTask } from '../../../labbox';
+import { TaskStatusView, usePureCalculationTask } from '../../../labbox';
 import { WorkspaceModel } from '../../../pluginInterface/workspaceReducer';
 import { WorkspaceViewProps } from '../../../pluginInterface/WorkspaceViewPlugin';
 import SurfaceView, { SurfaceData } from './SurfaceView/SurfaceView';
@@ -23,7 +23,7 @@ const ModelSurfaceView: FunctionComponent<WorkspaceViewProps & {modelId: string,
   ), [workspace, modelId])
   const {modelInfo, task: modelInfoTask} = useModelInfo(model?.uri)
   const surfaceUri = modelInfo?.surfaces[surfaceName].uri
-  const {returnValue: surfaceData, task: surfaceDataTask} = useTask<SurfaceData>(surfaceUri ? 'get_surface_data.6' : '', {surface_uri: surfaceUri})
+  const {returnValue: surfaceData, task: surfaceDataTask} = usePureCalculationTask<SurfaceData>(surfaceUri ? 'get_surface_data.6' : '', {surface_uri: surfaceUri})
   if (!model) return <span>Model not found.</span>
   if (!modelInfo) {
     return <TaskStatusView task={modelInfoTask} label="get model info" />

@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo } from 'react'
 import { FunctionComponent } from "react"
-import { useChannelClient, useTask } from '../labbox'
-import useCurrentUserPermissions from '../labbox/channels/useCurrentUserPermissions'
-import { FeedId, isFeedId, sha1OfString, SubfeedHash } from '../labbox/types/kacheryTypes'
+import { FeedId, isFeedId, sha1OfString, SubfeedHash } from '../labbox/kachery-js/types/kacheryTypes'
+import useQueryTask from '../labbox/kachery-react/useQueryTask'
 import useSubfeedReducer from '../labbox/misc/useSubfeedReducer'
+import useSelectedChannel from '../pages/Home/useSelectedChannel'
+import useCurrentUserPermissions from '../pages/WorkspacePage/useCurrentUserPermissions'
 import WorkspacesTable from './WorkspacesTable'
 
 type Props = {
@@ -80,8 +81,8 @@ const workspaceListReducer = (s: WorkspaceListState, a: WorkspaceListAction) => 
 }
 
 const WorkspaceList: FunctionComponent<Props> = ({onWorkspaceSelected}) => {
-    const client = useChannelClient()
-    const {returnValue: workspaceListSubfeedUri, task} = useTask<string>(client?.channelName ? 'workspace_list_subfeed.2' : '', {channel: client?.channelName, cachebust: '3'})
+    const {selectedChannel: channelName} = useSelectedChannel()
+    const {returnValue: workspaceListSubfeedUri, task} = useQueryTask<string>(channelName ? 'workspace_list_subfeed.2' : '', {channel: channelName})
     const {feedId, subfeedHash} = parseSubfeedUri(workspaceListSubfeedUri)
 
     const currentUserPermissions = useCurrentUserPermissions()
@@ -99,7 +100,7 @@ const WorkspaceList: FunctionComponent<Props> = ({onWorkspaceSelected}) => {
         onWorkspaceSelected(w.uri)
     }, [onWorkspaceSelected])
     const handleDeleteWorkspace = useCallback((workspaceName: string) => {
-        workspacesDispatch({
+        workspacesDispatch && workspacesDispatch({
             type: 'remove',
             name: workspaceName
         })

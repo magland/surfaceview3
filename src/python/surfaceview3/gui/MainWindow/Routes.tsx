@@ -2,7 +2,6 @@ import React from 'react'
 import { FunctionComponent } from "react"
 import Home from '../pages/Home/Home'
 import WorkspacePage from '../pages/WorkspacePage/WorkspacePage'
-import { useChannelClient } from '../labbox'
 import useRoute from '../route/useRoute'
 import SelectWorkspace from './SelectWorkspace'
 
@@ -12,13 +11,12 @@ type Props = {
 }
 
 const Routes: FunctionComponent<Props> = ({width, height}) => {
-    const client = useChannelClient()
     const {routePath, workspaceUri, setRoute} = useRoute()
 
     if (routePath === '/about') {
         return <div>About</div>
     }
-    else if ((routePath === '/selectWorkspace') && (client)) {
+    else if (routePath === '/selectWorkspace') {
         return (
             <SelectWorkspace
                 onUpdated={() => {setRoute({routePath: '/workspace'})}}
@@ -27,7 +25,7 @@ const Routes: FunctionComponent<Props> = ({width, height}) => {
             />
         )
     }
-    else if (((routePath === '/workspace') || (routePath.startsWith('/workspace/'))) && (workspaceUri) && (client)) {
+    else if (((routePath === '/workspace') || (routePath.startsWith('/workspace/'))) && (workspaceUri)) {
         return (
             <WorkspacePage
                 width={width}

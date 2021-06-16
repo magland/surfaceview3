@@ -28,7 +28,7 @@ const SignInSection: FunctionComponent<Props> = () => {
                 signedIn ? (
                     <p>You are signed in as {googleSignInClient.profile?.getEmail()}</p>
                 ) : (
-                    <p>Some actions on backend providers require authorization. You can optionally <Hyperlink style={hyperlinkStyle} onClick={toggleGoogleSignInVisible}>sign in using a Google account</Hyperlink>.</p>
+                    <p>Some actions require authorization. You can optionally <Hyperlink style={hyperlinkStyle} onClick={toggleGoogleSignInVisible}>sign in using a Google account</Hyperlink>.</p>
                 )
             }                        
             {

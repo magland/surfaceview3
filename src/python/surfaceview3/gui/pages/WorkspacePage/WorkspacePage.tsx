@@ -1,11 +1,11 @@
 import React, { FunctionComponent, useMemo } from 'react'
 import WorkspaceView from '../../extensions/workspaceview/WorkspaceView'
-import { parseWorkspaceUri, useChannelClient } from '../../labbox'
-import useCurrentUserPermissions from '../../labbox/channels/useCurrentUserPermissions'
-import { sha1OfString, SubfeedHash } from '../../labbox/types/kacheryTypes'
+import { parseWorkspaceUri } from '../../labbox'
+import { sha1OfString, SubfeedHash } from '../../labbox/kachery-js/types/kacheryTypes'
 import useSubfeedReducer from '../../labbox/misc/useSubfeedReducer'
 import workspaceReducer, { initialWorkspaceState } from '../../pluginInterface/workspaceReducer'
 import useRoute from '../../route/useRoute'
+import useCurrentUserPermissions from './useCurrentUserPermissions'
 import useWorkspaceRoute from './useWorkspaceRoute'
 
 type Props = {
@@ -14,8 +14,6 @@ type Props = {
 }
 
 const useWorkspace = (workspaceUri: string) => {
-    const client = useChannelClient()
-    if (!client) throw Error('Unexpected: no backend provider client')
     const {feedId} = parseWorkspaceUri(workspaceUri)
     if (!feedId) throw Error(`Error parsing workspace URI: ${workspaceUri}`)
 

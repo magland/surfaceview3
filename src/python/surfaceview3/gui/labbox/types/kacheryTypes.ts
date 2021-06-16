@@ -1,5 +1,5 @@
 import assert from 'assert';
-import crypto from 'crypto'
+import crypto from 'crypto';
 
 export type JSONPrimitive = string | number | boolean | null;
 export type JSONValue = JSONPrimitive | JSONObject | JSONArray;
@@ -352,7 +352,7 @@ export const isPublicKey = (x: any) : x is PublicKey => {
 export interface PrivateKey extends String {
     __privateKey__: never // phantom type
 }
-export const isPrivateKey = (x: any) : x is PublicKey => {
+export const isPrivateKey = (x: any) : x is PrivateKey => {
     if (!isString(x)) return false;
     return checkKeyblockHeader(x, 'PRIVATE');
 }
@@ -415,13 +415,20 @@ export const isSha1Hash = (x: any) : x is Sha1Hash => {
     return isHexadecimal(x, 40); // Sha1 should be 40 hex characters
 }
 
-// TaskHash
-export interface TaskHash extends String {
-    __taskHash__: never // phantom type
+// TaskId
+export interface TaskId extends String {
+    __taskId__: never // phantom type
 }
-export const isTaskHash = (x: any) : x is TaskHash => {
+export const isTaskId = (x: any) : x is TaskId => {
     if (!isString(x)) return false;
-    return isHexadecimal(x, 40); // Sha1 should be 40 hex characters
+    if (x.length > 40) return false
+    return true
+}
+export const toTaskId = (x: String) => {
+    if (!isTaskId(x)) {
+        throw Error(`Not a valid task ID: ${x}`)
+    }
+    return x as TaskId
 }
 
 //TaskStatus
@@ -485,7 +492,7 @@ export const isChannelName = (x: any): x is ChannelName => {
     let result = true
     x.split(".").forEach((element) => {
         if (element.length === 0) result = false
-        if (!/^[a-zA-Z0-9@]([a-zA-Z0-9@-]*[a-zA-Z0-9@])?$/.test(element)) result = false
+        if (!/^[a-zA-Z0-9@_-]([a-zA-Z0-9@_-]*[a-zA-Z0-9@_-])?$/.test(element)) result = false
     })
     return result
 }
@@ -500,11 +507,11 @@ export interface TaskFunctionId extends String {
 }
 export const isTaskFunctionId = (x: any): x is TaskFunctionId => {
     if (!isString(x)) return false;
-    if (x.length > 40) return false
+    if (x.length > 400) return false
     let result = true
     x.split(".").forEach((element) => {
         if (element.length === 0) result = false
-        if (!/^[a-zA-Z0-9@]([a-zA-Z0-9@-]*[a-zA-Z0-9@])?$/.test(element)) result = false
+        if (!/^[a-zA-Z0-9@_-]([a-zA-Z0-9@_-]*[a-zA-Z0-9@_-])?$/.test(element)) result = false
     })
     return result
 }
@@ -909,7 +916,7 @@ export const channelConfigUrl = (x: string): ChannelConfigUrl => {
 
 export const sleepMsec = (m: number) => new Promise(r => setTimeout(r, m));
 
-export const pathifyHash = (x: Sha1Hash | FeedId | SubfeedHash | TaskHash) => {
+export const pathifyHash = (x: Sha1Hash | FeedId | SubfeedHash) => {
     return `${x[0]}${x[1]}/${x[2]}${x[3]}/${x[4]}${x[5]}/${x}`
 }
 

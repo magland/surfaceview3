@@ -2,7 +2,7 @@ import { Button } from '@material-ui/core'
 import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react'
 import Hyperlink from '../../commonComponents/Hyperlink/Hyperlink'
 import NiceTable from '../../commonComponents/NiceTable/NiceTable'
-import { ChannelName } from '../types/kacheryTypes'
+import { ChannelName } from '../kachery-js/types/kacheryTypes'
 import { ChannelItem, ChannelItemsAction } from './channelItemsReducer'
 
 type Props = {
@@ -19,10 +19,10 @@ const ChannelsTable: FunctionComponent<Props> = ({selectedChannel, onSelectChann
             key: 'channel',
             label: 'Channel'
         },
-        {
-            key: 'alive',
-            label: 'Alive'
-        },
+        // {
+        //     key: 'alive',
+        //     label: 'Alive'
+        // },
         {
             key: 'forget',
             label: 'Forget'
@@ -39,13 +39,13 @@ const ChannelsTable: FunctionComponent<Props> = ({selectedChannel, onSelectChann
                     text: x.channel,
                     element: <Hyperlink onClick={() => {onSelectChannel(x.channel)}}>{x.channel}</Hyperlink>
                 },
-                alive: (channelStatuses[x.channel.toString()] || {}).alive ? 'YES' : 'NO',
+                // alive: (channelStatuses[x.channel.toString()] || {}).alive ? 'YES' : 'NO',
                 forget: x.lastUsed === 0 ? '' : {
                     element: <button onClick={() => {handleForgetItem(x)}}>forget</button>
                 }
             }
         }))
-    ), [onSelectChannel, channelStatuses, channelItems, handleForgetItem])
+    ), [onSelectChannel, channelItems, handleForgetItem])
     const handleSelectedRowKeysChanged = useCallback((channels: string[]) => {
         if (channels[0]) {
             onSelectChannel(channels[0] as any as ChannelName)

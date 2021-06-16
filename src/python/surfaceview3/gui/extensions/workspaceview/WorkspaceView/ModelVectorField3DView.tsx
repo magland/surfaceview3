@@ -1,13 +1,15 @@
 import React, { FunctionComponent, useMemo, useState } from 'react';
 import useFetchCache from '../../../common/useFetchCache';
-import { TaskStatusView, useChannelClient } from '../../../labbox';
-import ChannelClient from '../../../labbox/channels/ChannelClient';
+import { TaskStatusView, useKacheryNode } from '../../../labbox';
+import KacheryDaemonNode from '../../../labbox/kachery-js/KacheryDaemonNode';
+import initiateTask from '../../../labbox/kachery-react/initiateTask';
+import { channelName } from '../../../labbox/types/kacheryTypes';
 import { WorkspaceModel } from '../../../pluginInterface/workspaceReducer';
 import { WorkspaceViewProps } from '../../../pluginInterface/WorkspaceViewPlugin';
 import ComponentSelector from './ComponentSelector';
 import PlaneSelector from './PlaneSelector';
 import RealImagSelector from './RealImagSelector';
-import SlicesView, {SliceDataQuery} from './SlicesView/SlicesView';
+import SlicesView, { SliceDataQuery } from './SlicesView/SlicesView';
 import useModelInfo from './useModelInfo';
 
 export interface LocationInterface {
@@ -28,33 +30,39 @@ export type VectorField3DData = {
   // values: number[][][][][] // real/imag x component x nx x ny x nz
 }
 
-const getSliceData = async (args: {client: ChannelClient | undefined, vectorField3DUri: string | undefined, plane: 'XY' | 'XZ' | 'YZ', sliceIndex: number}): Promise<{values: number[][][][]} | undefined> => {
-  const { client, vectorField3DUri, plane, sliceIndex } = args
-  if (!client) return undefined
+const getSliceData = async (args: {kacheryNode: KacheryDaemonNode | undefined, vectorField3DUri: string | undefined, plane: 'XY' | 'XZ' | 'YZ', sliceIndex: number}): Promise<{values: number[][][][]} | undefined> => {
+  const { kacheryNode, vectorField3DUri, plane, sliceIndex } = args
+  if (!kacheryNode) return undefined
   if (!vectorField3DUri) return undefined
-  const task = client.initiateTask<{values: number[][][][]}>(
-    'get_vector_field_3d_slice_data.3',
-    {
-      vector_field_3d_uri: vectorField3DUri,
-      plane,
-      slice_index: sliceIndex
-    }
-  )
-  if (!task) throw Error('Unable to create get_vector_field_3d_slice_data task')
   return new Promise((resolve, reject) => {
+    const task = initiateTask<{values: number[][][][]}>({
+      kacheryNode,
+      channelName: channelName('ccm'),
+      functionId: 'get_vector_field_3d_slice_data.3',
+      kwargs: {
+        vector_field_3d_uri: vectorField3DUri,
+        plane,
+        slice_index: sliceIndex
+      },
+      functionType: 'pure-calculation',
+      onStatusChanged: () => {
+        check()
+      }
+    })
+    if (!task) {
+      reject('Unable to create get_vector_field_3d_slice_data task')
+      return
+    }
     const check = () => {
       if (task.status === 'finished') {
-        if (!task.returnValue) {
-          reject('No return value')
-          return
-        }
-        resolve(task.returnValue)
+        const result = task.result
+        if (result) resolve(result)
+        else reject(new Error('No result even though status is finished'))
       }
       else if (task.status === 'error') {
         reject(task.errorMessage)
       }
     }
-    task.onStatusChanged(status => check())
     check()
   })
 }
@@ -68,7 +76,7 @@ const ModelVectorField3DView: FunctionComponent<WorkspaceViewProps & {modelId: s
   const {modelInfo, task: modelInfoTask} = useModelInfo(model?.uri)
   const vfInfo = modelInfo?.vectorfield3ds[vectorField3DName]
   const uri = vfInfo?.uri
-  const client = useChannelClient()
+  const kacheryNode = useKacheryNode()
 
   const [currentComponent, setCurrentComponent] = useState<number | undefined>(0)
   const componentChoices = useMemo(() => (
@@ -80,7 +88,7 @@ const ModelVectorField3DView: FunctionComponent<WorkspaceViewProps & {modelId: s
   const fetch = useMemo(() => (async (query: SliceDataQuery) => {
     switch(query.type) {
       case 'getSliceData': {
-        const d = await getSliceData({client, vectorField3DUri: uri, plane: currentPlane, sliceIndex: query.sliceIndex})
+        const d = await getSliceData({kacheryNode, vectorField3DUri: uri, plane: currentPlane, sliceIndex: query.sliceIndex})
         if (!d) return undefined
         if (currentComponent === undefined) return
         const nx = d.values[0][0].length
@@ -107,7 +115,7 @@ const ModelVectorField3DView: FunctionComponent<WorkspaceViewProps & {modelId: s
       }
     }
     return undefined
-  }), [client, uri, currentPlane, currentComponent, realImagIndex])
+  }), [kacheryNode, uri, currentPlane, currentComponent, realImagIndex])
   const sliceData = useFetchCache<SliceDataQuery>(fetch)
 
   const {nx, ny, numSlices} = useMemo(() => {
