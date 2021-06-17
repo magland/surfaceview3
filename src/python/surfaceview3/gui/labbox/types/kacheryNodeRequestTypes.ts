@@ -1,4 +1,4 @@
-import { AblyTokenRequest, ChannelConfig, isAblyTokenRequest, isChannelConfig, isNodeConfig, NodeConfig } from "../kachery-js/types/kacheryHubTypes"
+import { AblyTokenRequest, ChannelConfig, isAblyTokenRequest, isChannelConfig, isNodeConfig, NodeConfig } from "kachery-js/types/kacheryHubTypes"
 import { ByteCount, ChannelName, FeedId, isArrayOf, isBoolean, isByteCount, isChannelName, isEqualTo, isFeedId, isNodeId, isNodeLabel, isNumber, isOneOf, isSha1Hash, isSignature, isSubfeedHash, isTaskId, isUrlString, isUserId, NodeId, NodeLabel, optional, Sha1Hash, Signature, SubfeedHash, TaskId, UrlString, UserId, _validateObject } from "./kacheryTypes"
 
 export type ReportRequestBody = {

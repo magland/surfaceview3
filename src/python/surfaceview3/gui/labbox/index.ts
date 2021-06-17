@@ -3,10 +3,10 @@ export {default as useGoogleSignInClient} from './googleSignIn/useGoogleSignInCl
 export {default as GoogleSignIn} from './googleSignIn/GoogleSignIn'
 
 // export {default as ChannelsSetup} from './channels/ChannelsSetup'
-export {default as KacheryNodeSetup} from './kachery-react/KacheryNodeSetup'
-export {default as useKacheryNode} from './kachery-react/useKacheryNode'
-export {default as usePureCalculationTask} from './kachery-react/usePureCalculationTask'
-export {default as useQueryTask} from './kachery-react/useQueryTask'
+export {default as KacheryNodeSetup} from 'kachery-react/KacheryNodeSetup'
+export {default as useKacheryNode} from 'kachery-react/useKacheryNode'
+export {default as usePureCalculationTask} from 'kachery-react/usePureCalculationTask'
+export {default as useQueryTask} from 'kachery-react/useQueryTask'
 
 export {default as ExtensionsSetup} from './extensionSystem/ExtensionsSetup'
 export {default as usePlugins} from './extensionSystem/usePlugins'

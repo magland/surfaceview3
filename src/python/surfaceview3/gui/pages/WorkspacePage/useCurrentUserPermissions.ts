@@ -1,4 +1,4 @@
-import { isBoolean, isFeedId, isObjectOf, optional, _validateObject } from '../../labbox/kachery-js/types/kacheryTypes'
+import { isBoolean, isFeedId, isObjectOf, optional, _validateObject } from 'kachery-js/types/kacheryTypes'
 
 type UserFeedPermissions = {
     append?: boolean

@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useMemo } from 'react'
 import WorkspaceView from '../../extensions/workspaceview/WorkspaceView'
 import { parseWorkspaceUri } from '../../labbox'
-import { sha1OfString, SubfeedHash } from '../../labbox/kachery-js/types/kacheryTypes'
+import { sha1OfString, SubfeedHash } from 'kachery-js/types/kacheryTypes'
 import useSubfeedReducer from '../../labbox/misc/useSubfeedReducer'
 import workspaceReducer, { initialWorkspaceState } from '../../pluginInterface/workspaceReducer'
 import useRoute from '../../route/useRoute'

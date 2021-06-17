@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { FeedId, JSONStringifyDeterministic, SubfeedHash, SubfeedMessage } from '../kachery-js/types/kacheryTypes'
-import useSubfeed from '../kachery-react/useSubfeed'
+import { FeedId, JSONStringifyDeterministic, SubfeedHash, SubfeedMessage } from 'kachery-js/types/kacheryTypes'
+import useSubfeed from 'kachery-react/useSubfeed'
 
 type CompositeState<State> = {
     feedId: FeedId,

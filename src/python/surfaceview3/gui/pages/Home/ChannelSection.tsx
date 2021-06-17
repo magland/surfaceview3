@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useCallback } from 'react'
 import Hyperlink from '../../commonComponents/Hyperlink/Hyperlink'
-import { ChannelName } from '../../labbox/kachery-js/types/kacheryTypes'
+import { ChannelName } from 'kachery-js/types/kacheryTypes'
 import useRoute from '../../route/useRoute'
 import hyperlinkStyle from './hyperlinkStyle'
 import RecentlyUsedBackends from './RecentlyUsedChannels'

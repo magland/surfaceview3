@@ -5,7 +5,7 @@ import MainWindow from './python/{{ projectName }}/gui/MainWindow/MainWindow';
 import { MuiThemeProvider } from '@material-ui/core';
 import theme from './theme';
 import { BrowserRouter } from 'react-router-dom';
-import {ChannelsSetup, GoogleSignInSetup} from './python/{{ projectName }}/gui/labbox';
+import {KacheryNodeSetup, GoogleSignInSetup} from './python/{{ projectName }}/gui/labbox';
 
 function App() {
   return (
@@ -13,9 +13,9 @@ function App() {
       <MuiThemeProvider theme={theme}>
         <BrowserRouter>
           <GoogleSignInSetup>
-            <ChannelsSetup>
+            <KacheryNodeSetup>
               <MainWindow />
-            </ChannelsSetup>
+            </KacheryNodeSetup>
           </GoogleSignInSetup>
         </BrowserRouter>
       </MuiThemeProvider>

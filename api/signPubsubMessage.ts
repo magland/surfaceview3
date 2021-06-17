@@ -1,11 +1,8 @@
 import { VercelRequest, VercelResponse } from '@vercel/node'
-import { getSignature, privateKeyToHex, publicKeyToHex, signPubsubMessage } from '../src/python/surfaceview3/gui/labbox/kachery-js/types/crypto_util'
-import { isKacheryHubPubsubMessageBody } from '../src/python/surfaceview3/gui/labbox/kachery-js/types/pubsubMessages'
+import { signMessageNew } from '../src/kachery-js/types/crypto_util'
+import { JSONValue } from '../src/kachery-js/types/kacheryTypes'
+import { isKacheryHubPubsubMessageBody } from '../src/kachery-js/types/pubsubMessages'
 import getKeyPair from './common/getKeyPair'
-import crypto from 'crypto'
-import * as ed from 'noble-ed25519'
-import { isSignature, JSONStringifyDeterministic, JSONValue, KeyPair, sha1OfString, Signature } from '../src/python/surfaceview3/gui/labbox/kachery-js/types/kacheryTypes'
-import { sign } from 'mathjs'
 
 const keyPair = getKeyPair()
 
@@ -28,7 +25,7 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         if (!okay) {
             throw Error(`Illegal kachery pubsub message: ${messageBody["type"]}`)
         }
-        const signature = await signPubsubMessage(messageBody as any as JSONValue, keyPair)
+        const signature = await signMessageNew(messageBody as any as JSONValue, keyPair)
         return {signature}
     })().then((result) => {
         res.json(result)

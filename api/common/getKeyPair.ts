@@ -1,5 +1,5 @@
-import { nodeIdToPublicKey } from "../../src/python/surfaceview3/gui/labbox/kachery-js/types/crypto_util"
-import { isNodeId, isPrivateKey, KeyPair } from "../../src/python/surfaceview3/gui/labbox/kachery-js/types/kacheryTypes"
+import { nodeIdToPublicKey } from "../../src/kachery-js/types/crypto_util"
+import { isNodeId, isPrivateKey, KeyPair } from "../../src/kachery-js/types/kacheryTypes"
 
 const nodeId = process.env.REACT_APP_KACHERY_NODE_ID
 const privateKey = process.env.KACHERY_NODE_PRIVATE_KEY

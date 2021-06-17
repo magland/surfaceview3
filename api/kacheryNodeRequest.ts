@@ -1,8 +1,8 @@
 import { VercelRequest, VercelResponse } from '@vercel/node'
 import axios from 'axios'
-import { getSignature } from '../src/python/surfaceview3/gui/labbox/kachery-js/types/crypto_util'
-import { isKacheryNodeRequestBody, KacheryNodeRequest } from '../src/python/surfaceview3/gui/labbox/kachery-js/types/kacheryNodeRequestTypes'
-import { JSONValue } from '../src/python/surfaceview3/gui/labbox/kachery-js/types/kacheryTypes'
+import { signMessageNew } from '../src/kachery-js/types/crypto_util'
+import { isKacheryNodeRequestBody, KacheryNodeRequest } from '../src/kachery-js/types/kacheryNodeRequestTypes'
+import { JSONValue } from '../src/kachery-js/types/kacheryTypes'
 import getKeyPair from './common/getKeyPair'
 import getNodeId from './common/getNodeId'
 
@@ -11,7 +11,7 @@ const nodeId = getNodeId()
 
 const kacheryHubUrl = 'https://kacheryhub.org'
 
-module.exports = (req: VercelRequest, res: VercelResponse) => {    
+module.exports = (req: VercelRequest, res: VercelResponse) => {
     const {body: requestBody} = req
     if (!isKacheryNodeRequestBody(requestBody)) {
         console.warn('Invalid request body', requestBody)
@@ -36,7 +36,7 @@ module.exports = (req: VercelRequest, res: VercelResponse) => {
         const request: KacheryNodeRequest = {
             body: requestBody,
             nodeId,
-            signature: getSignature(requestBody, keyPair)
+            signature: await signMessageNew(requestBody as any as JSONValue, keyPair)
         }
         const x = await axios.post(`${kacheryHubUrl}/api/kacheryNode`, request)
         const response: JSONValue = x.data

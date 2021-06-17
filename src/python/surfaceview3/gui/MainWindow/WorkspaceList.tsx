@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react'
 import { FunctionComponent } from "react"
-import { FeedId, isFeedId, sha1OfString, SubfeedHash } from '../labbox/kachery-js/types/kacheryTypes'
-import useQueryTask from '../labbox/kachery-react/useQueryTask'
+import { FeedId, isFeedId, sha1OfString, SubfeedHash } from 'kachery-js/types/kacheryTypes'
+import useQueryTask from 'kachery-react/useQueryTask'
 import useSubfeedReducer from '../labbox/misc/useSubfeedReducer'
 import useSelectedChannel from '../pages/Home/useSelectedChannel'
 import useCurrentUserPermissions from '../pages/WorkspacePage/useCurrentUserPermissions'
@@ -82,7 +82,7 @@ const workspaceListReducer = (s: WorkspaceListState, a: WorkspaceListAction) => 
 
 const WorkspaceList: FunctionComponent<Props> = ({onWorkspaceSelected}) => {
     const {selectedChannel: channelName} = useSelectedChannel()
-    const {returnValue: workspaceListSubfeedUri, task} = useQueryTask<string>(channelName ? 'workspace_list_subfeed.2' : '', {channel: channelName})
+    const {returnValue: workspaceListSubfeedUri, task} = useQueryTask<string>(channelName ? 'workspace_list_subfeed.2' : '', {channel: channelName}, {useCache: true, channelName})
     const {feedId, subfeedHash} = parseSubfeedUri(workspaceListSubfeedUri)
 
     const currentUserPermissions = useCurrentUserPermissions()

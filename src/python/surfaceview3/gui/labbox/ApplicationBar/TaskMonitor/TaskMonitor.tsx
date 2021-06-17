@@ -2,7 +2,7 @@ import { Button, IconButton, Link as LinkMui, Table, TableBody, TableCell, Table
 import { Delete } from '@material-ui/icons';
 import React, { FunctionComponent, useState } from 'react';
 import NiceTable from '../../../commonComponents/NiceTable/NiceTable';
-import { Task } from '../../kachery-react/initiateTask';
+import { Task } from 'kachery-react/initiateTask';
 import { useUpdatingTasks } from './TaskMonitorControl';
 type Props = {
     onClose: () => void

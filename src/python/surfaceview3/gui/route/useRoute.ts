@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 import QueryString from 'querystring'
 import RoutePath, { isRoutePath } from './RoutePath'
-import { ChannelName } from '../labbox/kachery-js/types/kacheryTypes'
+import { ChannelName } from 'kachery-js/types/kacheryTypes'
 
 const useRoute = () => {
     const location = useLocation()

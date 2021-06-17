@@ -1,5 +1,5 @@
 import { useCallback } from "react"
-import { ChannelName } from "../../labbox/kachery-js/types/kacheryTypes"
+import { ChannelName } from "kachery-js/types/kacheryTypes"
 import useRoute from "../../route/useRoute"
 
 const useSelectedChannel = () => {

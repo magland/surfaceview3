@@ -1,4 +1,4 @@
-import { isNodeId } from "../../src/python/surfaceview3/gui/labbox/kachery-js/types/kacheryTypes"
+import { isNodeId } from "../../src/kachery-js/types/kacheryTypes"
 
 const nodeId = process.env.REACT_APP_KACHERY_NODE_ID
 if (!isNodeId(nodeId)) {

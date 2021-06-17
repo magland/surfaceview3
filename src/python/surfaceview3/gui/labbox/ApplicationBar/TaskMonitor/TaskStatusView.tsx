@@ -1,6 +1,6 @@
 import React from 'react'
 import { FunctionComponent } from "react"
-import { Task } from '../../kachery-react/initiateTask'
+import { Task } from 'kachery-react/initiateTask'
 
 type Props = {
     label: string

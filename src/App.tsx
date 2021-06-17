@@ -6,7 +6,7 @@ import MainWindow from './python/surfaceview3/gui/MainWindow/MainWindow';
 import { MuiThemeProvider } from '@material-ui/core';
 import theme from './theme';
 import { BrowserRouter } from 'react-router-dom';
-import {ChannelsSetup, GoogleSignInSetup} from './python/surfaceview3/gui/labbox';
+import {KacheryNodeSetup, GoogleSignInSetup} from './python/surfaceview3/gui/labbox';
 
 function App() {
   return (
@@ -14,9 +14,9 @@ function App() {
       <MuiThemeProvider theme={theme}>
         <BrowserRouter>
           <GoogleSignInSetup>
-            <ChannelsSetup>
+            <KacheryNodeSetup>
               <MainWindow />
-            </ChannelsSetup>
+            </KacheryNodeSetup>
           </GoogleSignInSetup>
         </BrowserRouter>
       </MuiThemeProvider>

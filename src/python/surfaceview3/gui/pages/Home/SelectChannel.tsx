@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useReducer, useState } from 'react'
 import { FunctionComponent } from "react"
 import channelItemsReducer, { initialChannelItems } from '../../labbox/ApplicationBar/channelItemsReducer'
 import ChannelsTable, { getChannelConfig } from '../../labbox/ApplicationBar/ChannelsTable'
-import { ChannelName, isChannelName } from '../../labbox/kachery-js/types/kacheryTypes'
+import { ChannelName, isChannelName } from 'kachery-js/types/kacheryTypes'
 import useSelectedChannel from './useSelectedChannel'
 
 type Props = {

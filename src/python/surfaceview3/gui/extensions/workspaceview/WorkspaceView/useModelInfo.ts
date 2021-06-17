@@ -1,3 +1,4 @@
+import useSelectedChannel from "python/surfaceview3/gui/pages/Home/useSelectedChannel"
 import { usePureCalculationTask } from "../../../labbox"
 
 type SurfaceInfo = {
@@ -21,7 +22,8 @@ export type ModelInfo = {
 }
 
 const useModelInfo = (modelUri: string | undefined) => {
-    const {returnValue: modelInfo, task} = usePureCalculationTask<ModelInfo>(modelUri ? 'get_model_info.8' : '', {model_uri: modelUri})
+    const {selectedChannel: channelName} = useSelectedChannel()
+    const {returnValue: modelInfo, task} = usePureCalculationTask<ModelInfo>(modelUri ? 'get_model_info.8' : '', {model_uri: modelUri}, {channelName})
     return {modelInfo, task}
 }
 

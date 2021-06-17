@@ -2,7 +2,7 @@ import { Button } from '@material-ui/core'
 import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react'
 import Hyperlink from '../../commonComponents/Hyperlink/Hyperlink'
 import NiceTable from '../../commonComponents/NiceTable/NiceTable'
-import { ChannelName } from '../kachery-js/types/kacheryTypes'
+import { ChannelName } from 'kachery-js/types/kacheryTypes'
 import { ChannelItem, ChannelItemsAction } from './channelItemsReducer'
 
 type Props = {

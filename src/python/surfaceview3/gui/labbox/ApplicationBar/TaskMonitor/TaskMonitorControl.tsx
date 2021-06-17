@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useMemo } from 'react';
 import Hyperlink from '../../../commonComponents/Hyperlink/Hyperlink';
-import { Task } from '../../kachery-react/initiateTask';
+import { Task } from 'kachery-react/initiateTask';
 
 type Props = {
     onOpen: () => void

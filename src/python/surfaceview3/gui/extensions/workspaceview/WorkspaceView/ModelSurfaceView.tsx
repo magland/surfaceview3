@@ -1,3 +1,4 @@
+import useSelectedChannel from 'python/surfaceview3/gui/pages/Home/useSelectedChannel';
 import React, { FunctionComponent, useMemo } from 'react';
 import { TaskStatusView, usePureCalculationTask } from '../../../labbox';
 import { WorkspaceModel } from '../../../pluginInterface/workspaceReducer';
@@ -23,7 +24,8 @@ const ModelSurfaceView: FunctionComponent<WorkspaceViewProps & {modelId: string,
   ), [workspace, modelId])
   const {modelInfo, task: modelInfoTask} = useModelInfo(model?.uri)
   const surfaceUri = modelInfo?.surfaces[surfaceName].uri
-  const {returnValue: surfaceData, task: surfaceDataTask} = usePureCalculationTask<SurfaceData>(surfaceUri ? 'get_surface_data.6' : '', {surface_uri: surfaceUri})
+  const {selectedChannel: channelName} = useSelectedChannel()
+  const {returnValue: surfaceData, task: surfaceDataTask} = usePureCalculationTask<SurfaceData>(surfaceUri ? 'get_surface_data.6' : '', {surface_uri: surfaceUri}, {channelName})
   if (!model) return <span>Model not found.</span>
   if (!modelInfo) {
     return <TaskStatusView task={modelInfoTask} label="get model info" />
