@@ -1,9 +1,9 @@
+import { sha1OfString, SubfeedHash } from 'kachery-js/types/kacheryTypes'
+import useSubfeedReducer from 'kachery-react/useSubfeedReducer'
 import React, { FunctionComponent, useMemo } from 'react'
 import WorkspaceView from '../../extensions/workspaceview/WorkspaceView'
 import { parseWorkspaceUri } from '../../labbox'
-import { sha1OfString, SubfeedHash } from 'kachery-js/types/kacheryTypes'
-import useSubfeedReducer from '../../labbox/misc/useSubfeedReducer'
-import workspaceReducer, { initialWorkspaceState } from '../../pluginInterface/workspaceReducer'
+import workspaceReducer, { initialWorkspaceState, WorkspaceAction } from '../../pluginInterface/workspaceReducer'
 import useRoute from '../../route/useRoute'
 import useCurrentUserPermissions from './useCurrentUserPermissions'
 import useWorkspaceRoute from './useWorkspaceRoute'
@@ -18,7 +18,11 @@ const useWorkspace = (workspaceUri: string) => {
     if (!feedId) throw Error(`Error parsing workspace URI: ${workspaceUri}`)
 
     const subfeedHash = sha1OfString('main') as any as SubfeedHash
-    const [workspace, workspaceDispatch] = useSubfeedReducer(feedId, subfeedHash, workspaceReducer, initialWorkspaceState, {actionField: true})
+    const {state: workspace} = useSubfeedReducer(feedId, subfeedHash, workspaceReducer, initialWorkspaceState, {actionField: true})
+    const readOnly = true
+    const workspaceDispatch: ((a: WorkspaceAction) => void) | undefined = useMemo(() => (
+        readOnly ? undefined : (a: WorkspaceAction) => {}
+    ), [readOnly])
 
     return {workspace, workspaceDispatch}
 }

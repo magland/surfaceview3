@@ -1,8 +1,8 @@
+import { KacheryNode } from 'kachery-js';
+import initiateTask from 'kachery-react/initiateTask';
 import React, { FunctionComponent, useMemo, useState } from 'react';
 import useFetchCache from '../../../common/useFetchCache';
 import { TaskStatusView, useKacheryNode } from '../../../labbox';
-import KacheryDaemonNode from 'kachery-js/KacheryDaemonNode';
-import initiateTask from 'kachery-react/initiateTask';
 import { channelName } from '../../../labbox/types/kacheryTypes';
 import { WorkspaceModel } from '../../../pluginInterface/workspaceReducer';
 import { WorkspaceViewProps } from '../../../pluginInterface/WorkspaceViewPlugin';
@@ -30,7 +30,7 @@ export type VectorField3DData = {
   // values: number[][][][][] // real/imag x component x nx x ny x nz
 }
 
-const getSliceData = async (args: {kacheryNode: KacheryDaemonNode | undefined, vectorField3DUri: string | undefined, plane: 'XY' | 'XZ' | 'YZ', sliceIndex: number}): Promise<{values: number[][][][]} | undefined> => {
+const getSliceData = async (args: {kacheryNode: KacheryNode | undefined, vectorField3DUri: string | undefined, plane: 'XY' | 'XZ' | 'YZ', sliceIndex: number}): Promise<{values: number[][][][]} | undefined> => {
   const { kacheryNode, vectorField3DUri, plane, sliceIndex } = args
   if (!kacheryNode) return undefined
   if (!vectorField3DUri) return undefined
