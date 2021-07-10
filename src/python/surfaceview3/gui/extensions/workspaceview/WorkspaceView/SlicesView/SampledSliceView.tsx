@@ -1,6 +1,6 @@
+import CanvasWidget from 'labbox-react/components/CanvasWidget';
+import { useLayer, useLayers } from 'labbox-react/components/CanvasWidget/CanvasWidgetLayer';
 import React, { FunctionComponent } from 'react';
-import CanvasWidget from '../../../../commonComponents/CanvasWidget';
-import { useLayer, useLayers } from '../../../../commonComponents/CanvasWidget/CanvasWidgetLayer';
 import { createMainLayer, MainLayerProps, SampledSlice } from './mainLayer';
 
 type Props = {

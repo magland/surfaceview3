@@ -1,7 +1,7 @@
 import { Button } from '@material-ui/core';
+import Hyperlink from 'labbox-react/components/Hyperlink/Hyperlink';
+import NiceTable from 'labbox-react/components/NiceTable/NiceTable';
 import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
-import Hyperlink from '../../../commonComponents/Hyperlink/Hyperlink';
-import NiceTable from '../../../commonComponents/NiceTable/NiceTable';
 import { WorkspaceModel } from '../../../pluginInterface/workspaceReducer';
 import './WorkspaceView.css';
 

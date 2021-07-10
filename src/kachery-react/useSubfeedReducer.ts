@@ -21,7 +21,7 @@ const useSubfeedReducer = <State, Action>(feedId: FeedId | undefined, subfeedHas
         if (opts.actionField) {
             return messages2.map((m: any) => (m.action)).filter((a: any) => (a !== undefined)) as SubfeedMessage[]
         }
-        else return messages
+        else return messages2
     }, [messages2, opts.actionField])
 
     const initialStateString = JSONStringifyDeterministic(initialState)
@@ -59,8 +59,8 @@ const useSubfeedReducer = <State, Action>(feedId: FeedId | undefined, subfeedHas
     }, [feedId, subfeedHash, compositeState, messages, initialStateString, reducer])
 
     const state = useMemo(() => {
-        return compositeState ? compositeState.state : initialState
-    }, [compositeState, initialState])
+        return compositeState ? compositeState.state : JSON.parse(initialStateString)
+    }, [compositeState, initialStateString])
 
     return {state, subfeed}
 }

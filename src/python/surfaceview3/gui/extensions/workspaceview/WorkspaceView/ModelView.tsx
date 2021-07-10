@@ -1,5 +1,5 @@
+import TaskStatusView from 'kachery-react/components/TaskMonitor/TaskStatusView';
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
-import { TaskStatusView } from '../../../labbox';
 import { WorkspaceModel } from '../../../pluginInterface/workspaceReducer';
 import { WorkspaceViewProps } from '../../../pluginInterface/WorkspaceViewPlugin';
 import ModelSurfaceTable from './ModelSurfaceTable';

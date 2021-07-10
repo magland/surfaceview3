@@ -1,10 +1,10 @@
 import { Button, TextField } from '@material-ui/core'
 import React, { useCallback, useEffect, useReducer, useState } from 'react'
 import { FunctionComponent } from "react"
-import channelItemsReducer, { initialChannelItems } from '../../labbox/ApplicationBar/channelItemsReducer'
-import ChannelsTable, { getChannelConfig } from '../../labbox/ApplicationBar/ChannelsTable'
 import { ChannelName, isChannelName } from 'kachery-js/types/kacheryTypes'
 import useSelectedChannel from './useSelectedChannel'
+import ChannelsTable, { getChannelConfig } from 'kachery-react/components/SelectChannel/ChannelsTable'
+import channelItemsReducer, { initialChannelItems } from 'kachery-react/components/SelectChannel/channelItemsReducer'
 
 type Props = {
     onClose: () => void

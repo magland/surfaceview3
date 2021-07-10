@@ -1,11 +1,11 @@
 import axios from "axios";
 import KacheryHubClient, { IncomingKacheryHubPubsubMessage } from "../kacheryHubClient/KacheryHubClient";
-import IncomingTaskManager from "../tasks/IncomingTaskManager";
+import IncomingTaskManager, { ProbeTaskFunctionsResult } from "../tasks/IncomingTaskManager";
 import OutgoingTaskManager from "../tasks/outgoingTaskManager";
 import { NodeConfig, RegisteredTaskFunction, RequestedTask } from "../types/kacheryHubTypes";
 import { KacheryNodeRequestBody } from "../types/kacheryNodeRequestTypes";
 import { ByteCount, ChannelName, DurationMsec, durationMsecToNumber, elapsedSince, errorMessage, ErrorMessage, FeedId, FileKey, fileKeyHash, isMessageCount, isSignedSubfeedMessage, JSONValue, MessageCount, NodeId, NodeLabel, nowTimestamp, pathifyHash, pubsubChannelName, PubsubChannelName, Sha1Hash, Signature, SignedSubfeedMessage, SubfeedHash, SubfeedPosition, TaskFunctionId, TaskFunctionType, TaskId, TaskKwargs, TaskStatus, toTaskId, urlString, UrlString, UserId, _validateObject } from "../types/kacheryTypes";
-import { KacheryHubPubsubMessageBody, KacheryHubPubsubMessageData, RequestFileMessageBody, RequestSubfeedMessageBody, RequestTaskMessageBody, UpdateSubfeedMessageCountMessageBody, UpdateTaskStatusMessageBody, UploadFileStatusMessageBody } from "../types/pubsubMessages";
+import { KacheryHubPubsubMessageBody, KacheryHubPubsubMessageData, ProbeTaskFunctionsBody, RequestFileMessageBody, RequestSubfeedMessageBody, RequestTaskMessageBody, UpdateSubfeedMessageCountMessageBody, UpdateTaskStatusMessageBody, UploadFileStatusMessageBody } from "../types/pubsubMessages";
 import cacheBust from "../util/cacheBust";
 import computeTaskHash from "../util/computeTaskHash";
 import randomAlphaString from "../util/randomAlphaString";
@@ -20,6 +20,7 @@ type RequestTaskResult = {
     status: TaskStatus
     taskResultUrl?: UrlString
     errorMessage?: ErrorMessage
+    cacheHit?: boolean
 }
 
 type WaitForTaskResult = {
@@ -88,6 +89,35 @@ class KacheryHubInterface {
                 }
             }
         }
+        return options
+    }
+    async checkForSubfeedInChannelBuckets(feedId: FeedId, subfeedHash: SubfeedHash): Promise<{numMessages: MessageCount, channelName: ChannelName}[] | null> {
+        await this.initialize()
+        const nodeConfig = this.#nodeConfig
+        if (!nodeConfig) return null
+        const options: {numMessages: MessageCount, channelName: ChannelName}[] = []
+        const checkedBucketUrls = new Set<string>()
+        for (let cm of (nodeConfig.channelMemberships || [])) {
+            const channelName = cm.channelName
+            const bucketUri = cm.channelBucketUri
+            if (bucketUri) {
+                const bucketUrl = urlFromUri(bucketUri)
+                if (!checkedBucketUrls.has(bucketUrl)) {
+                    checkedBucketUrls.add(bucketUrl)
+                    const f = feedId.toString()
+                    const s = subfeedHash.toString()
+                    const subfeedPath = `feeds/${f[0]}${f[1]}/${f[2]}${f[3]}/${f[4]}${f[5]}/${f}/subfeeds/${s[0]}${s[1]}/${s[2]}${s[3]}/${s[4]}${s[5]}/${s}`
+                    const url2 = urlString(`${bucketUrl}/${subfeedPath}/subfeed.json`)
+                    const subfeedJson = await downloadJson(url2, {cacheBust: true})
+                    if (subfeedJson) {
+                        if (isSubfeedJson(subfeedJson)) {
+                            options.push({numMessages: subfeedJson.messageCount, channelName})
+                        }
+                    }
+                }
+            }
+        }
+        options.sort((a, b) => (Number(b.numMessages) - Number(a.numMessages))) // sort descending by num. messages
         return options
     }
     async requestFileFromChannels(fileKey: FileKey): Promise<boolean> {
@@ -260,6 +290,43 @@ class KacheryHubInterface {
         }
         this._publishMessageToPubsubChannel(channelName, pubsubChannelName(`${channelName}-requestTasks`), msg)
     }
+    async probeTaskFunctionsFromChannel(args: {channelName: ChannelName, taskFunctionIds: TaskFunctionId[]}) {
+        const {channelName, taskFunctionIds} = args
+        await this.initialize()
+        const nodeConfig = this.#nodeConfig
+        if (!nodeConfig) {
+            throw Error('Problem initializing kacheryhub interface')
+        }
+        const channelMembership = (nodeConfig.channelMemberships || []).filter(cm => (cm.channelName === channelName))[0]
+        if (!channelMembership) {
+            throw Error(`Not a member of channel: ${channelName}`)
+        }
+        const roles = channelMembership.roles
+        const permissions = (channelMembership.authorization || {}).permissions
+        if (!permissions) {
+            throw Error(`No permissions on channel: ${channelName}`)
+        }
+        if (!permissions.requestTasks) {
+            throw Error(`This node does not have permission to request tasks (probe task functions) on channel: ${channelName}`)
+        }
+        if (!roles.requestTasks) {
+            throw Error(`This node does not have role to request tasks (probe task functions) on channel: ${channelName}`)
+        }
+        const msg: ProbeTaskFunctionsBody = {
+            type: 'probeTaskFunctions',
+            taskFunctionIds
+        }
+        this._publishMessageToPubsubChannel(channelName, pubsubChannelName(`${channelName}-requestTasks`), msg)
+    }
+    getRegisteredTaskFunction(channelName: ChannelName, taskFunctionId: TaskFunctionId) {
+        return this.#outgoingTaskManager.getRegisteredTaskFunction(channelName, taskFunctionId)
+    }
+    clearRegisteredTaskFunctions() {
+        this.#outgoingTaskManager.clearRegisteredTaskFunctions()
+    }
+    onRegisteredTaskFunctionsChanged(cb: () => void) {
+	    return this.#outgoingTaskManager.onRegisteredTaskFunctionsChanged(cb)
+    }
     async downloadSignedSubfeedMessages(channelName: ChannelName, feedId: FeedId, subfeedHash: SubfeedHash, start: MessageCount, end: MessageCount): Promise<SignedSubfeedMessage[]> {
         await this.initialize()
         const nodeConfig = this.#nodeConfig
@@ -364,17 +431,25 @@ class KacheryHubInterface {
     async registerTaskFunctions(args: {taskFunctions: RegisteredTaskFunction[], timeoutMsec: DurationMsec}): Promise<RequestedTask[]> {
         return this.#incomingTaskManager.registerTaskFunctions(args)
     }
-    async requestTaskFromChannel(args: {channelName: ChannelName, taskFunctionId: TaskFunctionId, taskKwargs: TaskKwargs, taskFunctionType: TaskFunctionType, timeoutMsec: DurationMsec, queryUseCache?: boolean}): Promise<RequestTaskResult> {
-        await this.initialize()
-
-        const { channelName, taskFunctionId, taskKwargs, taskFunctionType, timeoutMsec, queryUseCache } = args
-        const taskHash = computeTaskHash(taskFunctionId, taskKwargs)
-        let taskId: TaskId
+    createTaskIdForTask(args: {taskFunctionId: TaskFunctionId, taskKwargs: TaskKwargs, taskFunctionType: TaskFunctionType}) {
+        const { taskFunctionId, taskKwargs, taskFunctionType } = args
         if (taskFunctionType === 'pure-calculation') {
-            taskId = toTaskId(taskHash)
+            const taskHash = computeTaskHash(taskFunctionId, taskKwargs)
+            return toTaskId(taskHash)
         }
         else {
-            taskId = toTaskId(randomAlphaString(10))
+            return toTaskId(randomAlphaString(10))
+        }
+    }
+    async requestTaskFromChannel(args: {channelName: ChannelName, taskId: TaskId, taskFunctionId: TaskFunctionId, taskKwargs: TaskKwargs, taskFunctionType: TaskFunctionType, timeoutMsec: DurationMsec, queryUseCache?: boolean}): Promise<RequestTaskResult> {
+        await this.initialize()
+
+        const { channelName, taskId, taskFunctionId, taskKwargs, taskFunctionType, timeoutMsec, queryUseCache } = args
+        const taskHash = computeTaskHash(taskFunctionId, taskKwargs)
+        if (taskFunctionType === 'pure-calculation') {
+            if (taskId !== toTaskId(taskHash)) {
+                throw Error('Unexpected: taskId does not equal taskHash for pure-calculation')
+            }
         }
         if ((taskFunctionType === 'pure-calculation') || ((taskFunctionType === 'query') && (queryUseCache))) {
             const channelBucketUri = await this.getChannelBucketUri(channelName)
@@ -392,7 +467,8 @@ class KacheryHubInterface {
                 return {
                     taskId,
                     status: 'finished',
-                    taskResultUrl: url
+                    taskResultUrl: url,
+                    cacheHit: true
                 }
             }
         }
@@ -414,7 +490,8 @@ class KacheryHubInterface {
             taskId,
             status: x.status,
             taskResultUrl: taskResultUrl,
-            errorMessage: x.errorMessage
+            errorMessage: x.errorMessage,
+            cacheHit: false
         }
     }
     async waitForTaskResult(args: {channelName: ChannelName, taskId: TaskId, taskResultUrl: UrlString | undefined, timeoutMsec: DurationMsec, taskFunctionType: TaskFunctionType}): Promise<WaitForTaskResult> {
@@ -564,6 +641,27 @@ class KacheryHubInterface {
             }
             this.#incomingTaskManager.requestTask({channelName: x.channelName, taskId: msg.taskId, taskFunctionId: msg.taskFunctionId, taskKwargs: msg.taskKwargs, taskFunctionType: msg.taskFunctionType})
         }
+        else if (msg.type === 'probeTaskFunctions') {
+            if (x.pubsubChannelName !== pubsubChannelName(`${x.channelName}-requestTasks`)) {
+                console.warn(`Unexpected pubsub channel for probeTaskFunctions: ${x.pubsubChannelName}`)
+                return
+            }
+            this.#incomingTaskManager.probeTaskFunctions({channelName: x.channelName, taskFunctionIds: msg.taskFunctionIds}).then((result: ProbeTaskFunctionsResult) => {
+                if (result.registeredTaskFunctions.length > 0) {
+                    this._publishMessageToPubsubChannel(x.channelName, pubsubChannelName(`${x.channelName}-provideTasks`), {
+                        type: 'reportRegisteredTaskFunctions',
+                        registeredTaskFunctions: result.registeredTaskFunctions
+                    })
+                }                
+            })
+        }
+        else if (msg.type === 'reportRegisteredTaskFunctions') {
+            if (x.pubsubChannelName !== pubsubChannelName(`${x.channelName}-provideTasks`)) {
+                console.warn(`Unexpected pubsub channel for reportRegisteredTaskFunctions: ${x.pubsubChannelName}`)
+                return
+            }
+            this.#outgoingTaskManager.reportRegisteredTaskFunctions(x.channelName, msg.registeredTaskFunctions)
+        }
     }
     async _doInitialize() {
         let nodeConfig: NodeConfig
@@ -641,6 +739,24 @@ const checkUrlExists = async (url: UrlString) => {
         return false
     }
 }
+
+const downloadJson = async (url: UrlString, opts: {cacheBust: boolean}): Promise<JSONValue | null> => {
+    if (opts.cacheBust) {
+        url = cacheBust(url)
+    }
+    let resp = null
+    try {
+        resp = await axios.get(url.toString(), {responseType: 'json'})
+    }
+    catch(err) {
+        return null
+    }
+    if ((resp) && (resp.data)) {
+        return resp.data as any as JSONValue
+    }
+    else return null
+}
+
 
 const bucketNameFromUri = (bucketUri: string) => {
     if (!bucketUri.startsWith('gs://')) throw Error(`Invalid bucket uri: ${bucketUri}`)

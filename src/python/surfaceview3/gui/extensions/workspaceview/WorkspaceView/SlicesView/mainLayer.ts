@@ -1,5 +1,5 @@
-import { CanvasPainter } from "../../../../commonComponents/CanvasWidget/CanvasPainter"
-import { CanvasWidgetLayer, ClickEvent, DiscreteMouseEventHandler } from "../../../../commonComponents/CanvasWidget/CanvasWidgetLayer"
+import { CanvasPainter } from "labbox-react/components/CanvasWidget/CanvasPainter"
+import { CanvasWidgetLayer, ClickEvent, DiscreteMouseEventHandler } from "labbox-react/components/CanvasWidget/CanvasWidgetLayer"
 
 // import { inv, matrix, Matrix, multiply } from 'mathjs'
 export type Point3 = [number, number, number]

@@ -6,3 +6,4 @@ projectAuthorEmail: jmagland@flatironinstitute.org
 projectDescription: Web app for viewing 3D surfaces and vector fields
 projectUrl: https://github.com/magland/surfaceview3
 projectBugTrackerUrl: https://github.com/magland/surfaceview3/issues
+pythonPackageDir: ./src/python

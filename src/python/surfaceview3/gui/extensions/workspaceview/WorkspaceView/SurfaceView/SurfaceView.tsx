@@ -1,6 +1,6 @@
+import Splitter from 'labbox-react/components/Splitter/Splitter';
 import React, { useState } from 'react'
 import { FunctionComponent } from "react"
-import Splitter from '../../../../commonComponents/Splitter/Splitter';
 import Controls, { SurfaceViewOptions } from './Controls';
 import SurfaceWidget from './SurfaceWidget';
 

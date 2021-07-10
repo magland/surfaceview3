@@ -1,8 +1,7 @@
+import { GoogleSignIn, useGoogleSignInClient, useSignedIn } from 'labbox-react'
+import Hyperlink from 'labbox-react/components/Hyperlink/Hyperlink'
 import React, { useCallback, useEffect, useState } from 'react'
 import { FunctionComponent } from "react"
-import Hyperlink from '../../commonComponents/Hyperlink/Hyperlink'
-import { GoogleSignIn, useGoogleSignInClient } from '../../labbox'
-import { useSignedIn } from '../../labbox/googleSignIn/GoogleSignIn'
 import hyperlinkStyle from './hyperlinkStyle'
 
 type Props = {

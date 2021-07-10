@@ -1,8 +1,8 @@
 import React from 'react'
 import { FunctionComponent } from "react"
-import Hyperlink from '../../commonComponents/Hyperlink/Hyperlink'
-import { loadChannelItems } from '../../labbox/ApplicationBar/channelItemsReducer'
+import Hyperlink from 'labbox-react/components/Hyperlink/Hyperlink'
 import { ChannelName } from 'kachery-js/types/kacheryTypes'
+import { loadChannelItems } from 'kachery-react/components/SelectChannel/channelItemsReducer'
 
 type Props = {
     onSelectChannel: (channel: ChannelName) => void

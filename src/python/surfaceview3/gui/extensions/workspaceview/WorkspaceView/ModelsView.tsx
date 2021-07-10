@@ -1,8 +1,8 @@
 import { Button } from '@material-ui/core';
+import { useVisible } from 'labbox-react';
+import MarkdownDialog from 'labbox-react/components/Markdown/MarkdownDialog';
+import ModalWindow from 'labbox-react/components/ModalWindow/ModalWindow';
 import React, { FunctionComponent, useCallback } from 'react';
-import MarkdownDialog from '../../../commonComponents/Markdown/MarkdownDialog';
-import { useVisible } from '../../../labbox';
-import ModalWindow from '../../../labbox/ApplicationBar/ModalWindow';
 import { WorkspaceViewProps } from '../../../pluginInterface/WorkspaceViewPlugin';
 import AddModelInstructions from './AddModelInstructions';
 import ModelsTable from './ModelsTable';

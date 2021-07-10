@@ -1,9 +1,9 @@
 import { FunctionComponent, useMemo } from "react";
-import { BasePlugin, ExtensionContext, usePlugins } from "../labbox";
 import { CalculationPool } from "kachery-react/createCalculationPool";
 import { WorkspaceDispatch, WorkspaceState } from "./workspaceReducer";
 import { WorkspaceRoute, WorkspaceRouteDispatch } from './WorkspaceRoute';
 import { WorkspaceViewPlugin } from "./WorkspaceViewPlugin";
+import { BasePlugin, ExtensionContext, usePlugins } from "labbox-react";
 
 export type { WorkspaceRoute, WorkspaceRouteDispatch } from './WorkspaceRoute';
 
@@ -19,6 +19,8 @@ export type MainWindowProps = {
 }
 export interface MainWindowPlugin extends BaseLabboxPlugin {
     type: 'MainWindow'
+    name: string
+    label: string
     component: FunctionComponent<MainWindowProps>
 }
 

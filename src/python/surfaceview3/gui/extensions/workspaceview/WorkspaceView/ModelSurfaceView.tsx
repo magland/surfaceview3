@@ -1,6 +1,7 @@
+import { usePureCalculationTask } from 'kachery-react';
+import TaskStatusView from 'kachery-react/components/TaskMonitor/TaskStatusView';
 import useSelectedChannel from 'python/surfaceview3/gui/pages/Home/useSelectedChannel';
 import React, { FunctionComponent, useMemo } from 'react';
-import { TaskStatusView, usePureCalculationTask } from '../../../labbox';
 import { WorkspaceModel } from '../../../pluginInterface/workspaceReducer';
 import { WorkspaceViewProps } from '../../../pluginInterface/WorkspaceViewPlugin';
 import SurfaceView, { SurfaceData } from './SurfaceView/SurfaceView';

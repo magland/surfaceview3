@@ -4,16 +4,22 @@ import { ChannelName, errorMessage, ErrorMessage, isTaskFunctionId, isTaskKwargs
 import { TaskFunctionType } from "kachery-js/types/kacheryTypes"
 import { cacheBust } from "kachery-js/util"
 import deserializeReturnValue from "./deserializeReturnValue"
+import TaskManager from "./TaskManager"
+
+export const taskManager = new TaskManager()
 
 export class Task<ReturnType> {
+    #taskId: TaskId
     #status: TaskStatus = 'waiting'
     #taskResultUrl: UrlString | undefined = undefined
     #errorMessage: ErrorMessage | undefined = undefined
     #result: ReturnType | undefined = undefined
-    #taskId: TaskId | undefined = undefined
     #timestampInitiated: Timestamp = nowTimestamp()
     #timestampCompleted: Timestamp | undefined = undefined
-    constructor(private args: {kacheryNode: KacheryNode, channelName: ChannelName, functionId: TaskFunctionId, kwargs: TaskKwargs, functionType: TaskFunctionType, onStatusChanged: () => void, queryUseCache?: boolean}) {
+    #statusUpdateCallbacks: (() => void)[] = []
+    #isCacheHit: boolean | undefined = undefined
+    constructor(private args: {kacheryNode: KacheryNode, channelName: ChannelName, taskId: TaskId, functionId: TaskFunctionId, kwargs: TaskKwargs, functionType: TaskFunctionType, onStatusChanged: () => void, queryUseCache?: boolean}) {
+        this.#taskId = args.taskId
         this._start()
     }
     public get functionId() {
@@ -46,6 +52,16 @@ export class Task<ReturnType> {
     public get taskId() {
         return this.#taskId
     }
+    public get isCacheHit() {
+        return this.#isCacheHit
+    }
+    onStatusUpdate(cb: () => void) {
+        this.#statusUpdateCallbacks.push(cb)
+    }
+    _reportStatusChanged() {
+        this.args.onStatusChanged()
+        this.#statusUpdateCallbacks.forEach(cb => cb())
+    }
     async _fetchResult() {
         const functionType = this.args.functionType
         if ((functionType === 'pure-calculation') || (functionType === 'query')) {
@@ -66,13 +82,17 @@ export class Task<ReturnType> {
         const { kacheryNode, channelName, functionId, kwargs, functionType, queryUseCache } = this.args
         const x = await kacheryNode.kacheryHubInterface().requestTaskFromChannel({
             channelName,
+            taskId: this.#taskId,
             taskFunctionId: functionId,
             taskKwargs: kwargs,
             taskFunctionType: functionType,
             timeoutMsec: scaledDurationMsec(1000),
             queryUseCache
         })
-        const {taskId, status, taskResultUrl, errorMessage} = x
+        const {taskId, status, taskResultUrl, errorMessage, cacheHit} = x
+        if (cacheHit !== undefined) {
+            this.#isCacheHit = cacheHit
+        }
         this.#taskId = taskId
 
         await this._updateStatus(status, taskResultUrl, errorMessage)
@@ -101,29 +121,29 @@ export class Task<ReturnType> {
                     this.#errorMessage = errorMessage('Problem fetching result even though status is finished')
                     this.#status = 'error'
                     this.#timestampCompleted = nowTimestamp()
-                    this.args.onStatusChanged()
+                    this._reportStatusChanged()
                     return
                 }
                 if (!result) {
                     this.#errorMessage = errorMessage('Result is undefined even though status is finished')
                     this.#status = 'error'
                     this.#timestampCompleted = nowTimestamp()
-                    this.args.onStatusChanged()
+                    this._reportStatusChanged()
                     return
                 }
                 this.#result = deserializeReturnValue(result)
                 this.#status = 'finished'
                 this.#timestampCompleted = nowTimestamp()
-                this.args.onStatusChanged()
+                this._reportStatusChanged()
             }
             else {
                 this.#status = status
-                this.args.onStatusChanged()
+                this._reportStatusChanged()
             }
         }
         else {
             this.#status = status
-            this.args.onStatusChanged()
+            this._reportStatusChanged()
         }
     }
 }
@@ -139,7 +159,15 @@ const initiateTask = <ReturnType>(args: {kacheryNode: KacheryNode, channelName: 
         throw Error(`Invalid task kwargs in ${functionId}`)
     }
 
-    const task = new Task<ReturnType>({kacheryNode, channelName, functionId, kwargs, functionType, onStatusChanged, queryUseCache})
+    const taskId = kacheryNode.kacheryHubInterface().createTaskIdForTask({taskFunctionId: functionId, taskKwargs: kwargs, taskFunctionType: functionType})
+    const existingTask = taskManager.getTask(taskId)
+    if (existingTask) {
+        existingTask.onStatusUpdate(onStatusChanged)
+        return existingTask
+    }
+
+    const task = new Task<ReturnType>({kacheryNode, taskId, channelName, functionId, kwargs, functionType, onStatusChanged, queryUseCache})
+    taskManager.addTask(task)
     return task
 }
 

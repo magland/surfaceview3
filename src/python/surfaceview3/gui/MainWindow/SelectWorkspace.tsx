@@ -1,8 +1,7 @@
 import { Button } from '@material-ui/core'
-import React, { useCallback, useEffect, useState } from 'react'
-import { FunctionComponent } from "react"
-import Splitter from '../commonComponents/Splitter/Splitter'
-import { useVisible } from '../labbox'
+import { useVisible } from 'labbox-react'
+import Splitter from 'labbox-react/components/Splitter/Splitter'
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react'
 import useRoute from '../route/useRoute'
 import AddWorkspaceInstructions from './AddWorkspaceInstructions'
 import WorkspaceList from './WorkspaceList'

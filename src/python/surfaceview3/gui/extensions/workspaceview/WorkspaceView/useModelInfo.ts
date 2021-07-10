@@ -1,5 +1,5 @@
+import { usePureCalculationTask } from "kachery-react"
 import useSelectedChannel from "python/surfaceview3/gui/pages/Home/useSelectedChannel"
-import { usePureCalculationTask } from "../../../labbox"
 
 type SurfaceInfo = {
     uri: string
