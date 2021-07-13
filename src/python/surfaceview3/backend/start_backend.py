@@ -1,4 +1,10 @@
+import os
+import json
 import kachery_client as kc
+
+thisdir = os.path.dirname(os.path.realpath(__file__))
+with open(thisdir + '/task_function_ids.json', 'r') as f:
+    task_function_ids = json.load(f)
 
 def start_backend(*, channel: str):
     # register the tasks
@@ -7,7 +13,5 @@ def start_backend(*, channel: str):
 
     kc.run_task_backend(
         channels=[channel],
-        task_function_ids=[
-            'workspace_list_subfeed.2', 'get_model_info.8', 'get_surface_data.6', 'get_vector_field_3d_info.1', 'get_vector_field_3d_slice_data.3'
-        ]
+        task_function_ids=task_function_ids
     )

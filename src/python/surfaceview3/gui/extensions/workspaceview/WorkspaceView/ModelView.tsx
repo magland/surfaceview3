@@ -19,6 +19,7 @@ export interface HistoryInterface {
 
 
 const ModelView: FunctionComponent<WorkspaceViewProps & {modelId: string}> = ({ modelId, workspace, workspaceDispatch, workspaceRoute, workspaceRouteDispatch, width=500, height=500 }) => {
+  console.log('---- workspace.models', workspace.models, modelId)
   const model = useMemo((): WorkspaceModel | undefined => (
     workspace.models.filter(x => (x.modelId === modelId))[0]
   ), [workspace, modelId])
@@ -31,7 +32,7 @@ const ModelView: FunctionComponent<WorkspaceViewProps & {modelId: string}> = ({ 
   }, [workspaceRouteDispatch, modelId])
   if (!model) return <span>Model not found.</span>
   if (!modelInfo) {
-    return <TaskStatusView task={task} label="get model info" />
+    return <TaskStatusView task={task} label={`get model info: ${model.label} ${model.uri}`} />
   }
   return (
     <div>

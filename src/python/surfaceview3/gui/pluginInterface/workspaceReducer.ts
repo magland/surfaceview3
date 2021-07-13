@@ -6,6 +6,7 @@ export type WorkspaceModel = {
 
 export type WorkspaceState = {
     models: WorkspaceModel[]
+    userPermissions: {[key: string]: {edit?: boolean}}
 }
 
 export type WorkspaceAction = {
@@ -32,7 +33,7 @@ const workspaceReducer = (s: WorkspaceState, a: WorkspaceAction): WorkspaceState
     return s
 }
 
-export const initialWorkspaceState: WorkspaceState = {models: []}
+export const initialWorkspaceState: WorkspaceState = {models: [], userPermissions: {}}
 
 export type WorkspaceDispatch = (a: WorkspaceAction) => void
 

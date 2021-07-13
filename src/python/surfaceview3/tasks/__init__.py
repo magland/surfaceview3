@@ -4,3 +4,4 @@ from .get_model_info import *
 from .get_surface_data import *
 from .get_vector_field_3d_info import *
 from .get_vector_field_3d_slice_data import *
+from .python_package_version import *

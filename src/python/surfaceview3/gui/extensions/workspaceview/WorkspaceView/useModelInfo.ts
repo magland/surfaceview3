@@ -1,5 +1,4 @@
-import { usePureCalculationTask } from "kachery-react"
-import useSelectedChannel from "python/surfaceview3/gui/pages/Home/useSelectedChannel"
+import { useChannel, usePureCalculationTask } from "kachery-react"
 
 type SurfaceInfo = {
     uri: string
@@ -22,7 +21,7 @@ export type ModelInfo = {
 }
 
 const useModelInfo = (modelUri: string | undefined) => {
-    const {selectedChannel: channelName} = useSelectedChannel()
+    const {channelName} = useChannel()
     const {returnValue: modelInfo, task} = usePureCalculationTask<ModelInfo>(modelUri ? 'get_model_info.8' : '', {model_uri: modelUri}, {channelName})
     return {modelInfo, task}
 }

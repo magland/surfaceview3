@@ -1,7 +1,7 @@
 import Markdown from 'labbox-react/components/Markdown/Markdown'
+import useRoute from 'labbox-react/MainWindow/useRoute'
 import React from 'react'
 import { FunctionComponent } from "react"
-import useRoute from '../../../route/useRoute'
 import addModelMd from './addModel.md.gen'
 
 type Props = {

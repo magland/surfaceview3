@@ -1,6 +1,5 @@
-import { FetchCache } from 'labbox-react/misc/useFetchCache'
-import React, { useEffect, useMemo, useState } from 'react'
-import { FunctionComponent } from "react"
+import { FetchCache } from 'kachery-react/useFetchCache'
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react'
 import BrightnessSlider from './BrightnessSlider'
 import { identityAffineTransformation3D, SampledSlice } from './mainLayer'
 import SampledSliceView from './SampledSliceView'

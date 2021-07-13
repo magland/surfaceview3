@@ -1,6 +1,5 @@
-import { usePureCalculationTask } from 'kachery-react';
+import { useChannel, usePureCalculationTask } from 'kachery-react';
 import TaskStatusView from 'kachery-react/components/TaskMonitor/TaskStatusView';
-import useSelectedChannel from 'python/surfaceview3/gui/pages/Home/useSelectedChannel';
 import React, { FunctionComponent, useMemo } from 'react';
 import { WorkspaceModel } from '../../../pluginInterface/workspaceReducer';
 import { WorkspaceViewProps } from '../../../pluginInterface/WorkspaceViewPlugin';
@@ -20,12 +19,13 @@ export interface HistoryInterface {
 
 
 const ModelSurfaceView: FunctionComponent<WorkspaceViewProps & {modelId: string, surfaceName: string}> = ({ modelId, surfaceName, workspace, workspaceDispatch, workspaceRoute, workspaceRouteDispatch, width=500, height=500 }) => {
+  console.log('---- workspace.models', workspace.models)
   const model = useMemo((): WorkspaceModel | undefined => (
     workspace.models.filter(x => (x.modelId === modelId))[0]
   ), [workspace, modelId])
   const {modelInfo, task: modelInfoTask} = useModelInfo(model?.uri)
   const surfaceUri = modelInfo?.surfaces[surfaceName].uri
-  const {selectedChannel: channelName} = useSelectedChannel()
+  const {channelName} = useChannel()
   const {returnValue: surfaceData, task: surfaceDataTask} = usePureCalculationTask<SurfaceData>(surfaceUri ? 'get_surface_data.6' : '', {surface_uri: surfaceUri}, {channelName})
   if (!model) return <span>Model not found.</span>
   if (!modelInfo) {

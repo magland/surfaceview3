@@ -1,9 +1,9 @@
 import numpy as np
 import hither2 as hi
 import kachery_client as kc
-import surfaceview2
-from surfaceview2.config import job_cache, job_handler
-from surfaceview2.workspace_list import WorkspaceList
+import surfaceview3
+from surfaceview3.config import job_cache, job_handler
+from surfaceview3.workspace_list import WorkspaceList
 import kachery_client as kc
 
 @hi.function('get_model_info', '0.1.8')
@@ -11,7 +11,7 @@ def get_model_info(model_uri: str):
     model_object = kc.load_json(model_uri)
     if not model_object:
         raise Exception(f'Unable to load object: {model_object}')
-    E = surfaceview2.Model.deserialize(model_object, label='')
+    E = surfaceview3.Model.deserialize(model_object, label='')
     ret = {
         'surfaces': {},
         'vectorfield3ds': {}

@@ -1,9 +1,8 @@
 import { KacheryNode } from 'kachery-js';
 import { channelName } from 'kachery-js/types/kacheryTypes';
-import { useKacheryNode } from 'kachery-react';
+import { useFetchCache, useKacheryNode } from 'kachery-react';
 import TaskStatusView from 'kachery-react/components/TaskMonitor/TaskStatusView';
 import initiateTask from 'kachery-react/initiateTask';
-import { useFetchCache } from 'labbox-react';
 import React, { FunctionComponent, useMemo, useState } from 'react';
 import { WorkspaceModel } from '../../../pluginInterface/workspaceReducer';
 import { WorkspaceViewProps } from '../../../pluginInterface/WorkspaceViewPlugin';

@@ -3,7 +3,7 @@ def vtk_to_mesh_dict(vtk_path: str, format: str, base64: bool=False) -> dict:
     from vtk.util.numpy_support import vtk_to_numpy
     from vtk import vtkUnstructuredGridReader, vtkXMLPolyDataReader
     from vtk.numpy_interface import dataset_adapter as dsa
-    from ..backend._serialize import _serialize
+    from ._serialize import _serialize
 
     if format == 'UnstructuredGrid':
         reader = vtkUnstructuredGridReader()

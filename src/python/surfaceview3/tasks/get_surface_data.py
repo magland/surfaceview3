@@ -1,13 +1,13 @@
 import numpy as np
 import hither2 as hi
 import kachery_client as kc
-import surfaceview2
-from surfaceview2.config import job_cache, job_handler
-from surfaceview2.workspace_list import WorkspaceList
+import surfaceview3
+from surfaceview3.config import job_cache, job_handler
+from surfaceview3.workspace_list import WorkspaceList
 
 @hi.function('get_surface_data', '0.1.2')
 def get_surface_data(surface_uri: str):
-    S = surfaceview2.Surface(surface_uri)
+    S = surfaceview3.Surface(surface_uri)
     return dict({
         'vertices': S.vertices.astype(np.float32),
         'faces': S.faces.astype(np.int32),

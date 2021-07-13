@@ -2,7 +2,6 @@ from typing import Union, cast
 
 import kachery_client as kc
 import numpy as np
-from kachery_p2p.main import store_pkl
 from ..surface.vtk_to_mesh_dict import vtk_to_mesh_dict
 
 
