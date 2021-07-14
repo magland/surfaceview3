@@ -12,8 +12,8 @@ type Props = {
 
 const SampledSliceView: FunctionComponent<Props> = ({width, height, sampledSlice, valueRange}) => {
     const mainLayerProps: MainLayerProps = {
-        width: 300,
-        height: 300,
+        width: Math.floor(width),
+        height: Math.floor(height),
         sampledSlice: sampledSlice,
         valueRange: valueRange,
     }
@@ -26,8 +26,8 @@ const SampledSliceView: FunctionComponent<Props> = ({width, height, sampledSlice
     return (
         <CanvasWidget
             layers={layers}
-            width={width}
-            height={height}
+            width={Math.floor(width)}
+            height={Math.floor(height)}
         />
     )
 }

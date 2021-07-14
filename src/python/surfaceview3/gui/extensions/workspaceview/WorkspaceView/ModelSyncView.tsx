@@ -43,8 +43,8 @@ const ModelSyncView: FunctionComponent<Props> = (props) => {
     if (![1, 2].includes(numViews)) {
         return <div>Right now, only 1 or 2 synchronized views are supported</div>
     }
-    const W = (width - 50) / numViews
-    const H = height
+    const W = (width - (numViews + 1) * 40) / numViews
+    const H = height - 80
     return (
         <Table>
             <TableBody>

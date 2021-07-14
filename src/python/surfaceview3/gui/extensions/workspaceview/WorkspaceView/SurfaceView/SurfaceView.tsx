@@ -24,7 +24,7 @@ const SurfaceView: FunctionComponent<Props> = ({surfaceData, currentSlice, width
         <Splitter
             width={width}
             height={height}
-            initialPosition={150}
+            initialPosition={200}
         >
             <Controls options={options} setOptions={setOptions} />
             <SurfaceWidget surfaceData={surfaceData} width={0} height={0} options={options} currentSlice={currentSlice} />

@@ -61,7 +61,7 @@ const SlicesView: FunctionComponent<Props> = ({nx, ny, numSlices, affineTransfor
         <div style={{margin: 30}}>
             <SampledSliceView
                 width={width}
-                height={300}
+                height={height - 50}
                 sampledSlice={currentSliceData}
                 valueRange={valueRangeAdjusted}
             />
