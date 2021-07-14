@@ -36,13 +36,13 @@ const WorkspacePart: FunctionComponent<Props> = ({workspaceRoute, workspaceRoute
 
 const ModelPart: FunctionComponent<Props> = ({workspace, workspaceRoute, workspaceRouteDispatch}) => {
     const handleClick = useCallback(() => {
-        if ((workspaceRoute.page !== 'model') && (workspaceRoute.page !== 'modelSurface') && (workspaceRoute.page !== 'modelVectorField3D')) throw Error('Unexpected')
+        if ((workspaceRoute.page !== 'model') && (workspaceRoute.page !== 'modelSurface') && (workspaceRoute.page !== 'modelVectorField3D') && (workspaceRoute.page !== 'modelSyncView')) throw Error('Unexpected')
         workspaceRouteDispatch({
             type: 'gotoModelPage',
             modelId: workspaceRoute.modelId
         })
     }, [workspaceRouteDispatch, workspaceRoute])
-    if ((workspaceRoute.page === 'model') || (workspaceRoute.page === 'modelSurface') || (workspaceRoute.page === 'modelVectorField3D')) {
+    if ((workspaceRoute.page === 'model') || (workspaceRoute.page === 'modelSurface') || (workspaceRoute.page === 'modelVectorField3D') || (workspaceRoute.page === 'modelSyncView')) {
         const mid = workspaceRoute.modelId
         const model = workspace.models.filter(r => (r.modelId === mid))[0]
         if (model) {

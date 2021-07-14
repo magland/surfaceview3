@@ -8,9 +8,10 @@ import './WorkspaceView.css';
 interface Props {
     models: WorkspaceModel[]
     onDeleteModels?: (modelIds: string[]) => void
-    onModelSelected?: (modelId: string) => void
+    onModelClicked?: (modelId: string) => void
+    onViewModels?: (modelIds: string[]) => void
 }
-const ModelsTable: FunctionComponent<Props> = ({ models, onDeleteModels, onModelSelected }) => {
+const ModelsTable: FunctionComponent<Props> = ({ models, onDeleteModels, onModelClicked, onViewModels }) => {
     const columns = useMemo(() => ([
         {
             key: 'label',
@@ -24,11 +25,11 @@ const ModelsTable: FunctionComponent<Props> = ({ models, onDeleteModels, onModel
             columnValues: {
                 label: {
                     text: x.label,
-                    element: <Hyperlink onClick={onModelSelected ? (() => {onModelSelected(x.modelId)}) : undefined}>{x.label}</Hyperlink>
+                    element: <Hyperlink onClick={onModelClicked ? (() => {onModelClicked(x.modelId)}) : undefined}>{x.label}</Hyperlink>
                 }
             }
         }
-    })), [models, onModelSelected])
+    })), [models, onModelClicked])
 
     const [selectedModelIds, setSelectedModelIds] = useState<string[]>([])
 
@@ -41,15 +42,24 @@ const ModelsTable: FunctionComponent<Props> = ({ models, onDeleteModels, onModel
         confirmOff()
     }, [onDeleteModels, selectedModelIds, confirmOff])
 
+    const handleViewSelectedModels = useCallback(() => {
+        onViewModels && onViewModels(selectedModelIds)
+    }, [onViewModels, selectedModelIds])
+
     return (
         <div>
             {
-                selectedModelIds.length > 0 && (
+                selectedModelIds.length > 0 && onDeleteModels && (
                     confirmingDelete ? (
                         <span>Confirm delete {selectedModelIds.length} models? <button onClick={handleDeleteSelectedModels}>Delete</button> <button onClick={confirmOff}>Cancel</button></span>
                     ) : (
                         <Button onClick={confirmOn}>Delete selected models</Button>
                     )
+                )
+            }
+            {
+                selectedModelIds.length > 0 && onViewModels && (
+                    <Button onClick={handleViewSelectedModels}>View selected models</Button>
                 )
             }
             <NiceTable
@@ -59,7 +69,7 @@ const ModelsTable: FunctionComponent<Props> = ({ models, onDeleteModels, onModel
                 // onDeleteRow={onDeleteModels ? handleDeleteRow : undefined}
                 selectedRowKeys={selectedModelIds}
                 onSelectedRowKeysChanged={setSelectedModelIds}
-                selectionMode={onDeleteModels ? "multiple" : "none"}
+                selectionMode={"multiple"}
             />
         </div>
     );

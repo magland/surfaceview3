@@ -6,9 +6,11 @@ import { ModelInfo } from './useModelInfo'
 type Props = {
     modelInfo: ModelInfo
     onSurfaceClicked?: (surfaceName: string) => void
+    selectedSurfaceNames?: string[]
+    onSelectedSurfacesChanged?: (surfaceNames: string[]) => void
 }
 
-const ModelSurfaceTable: FunctionComponent<Props> = ({modelInfo, onSurfaceClicked}) => {
+const ModelSurfaceTable: FunctionComponent<Props> = ({modelInfo, onSurfaceClicked, selectedSurfaceNames, onSelectedSurfacesChanged}) => {
     const surfaceNames = useMemo(() => {
         const ret = Object.keys(modelInfo.surfaces).sort()
         ret.sort()
@@ -51,6 +53,9 @@ const ModelSurfaceTable: FunctionComponent<Props> = ({modelInfo, onSurfaceClicke
         <NiceTable
             columns={columns}
             rows={rows}
+            selectedRowKeys={selectedSurfaceNames}
+            onSelectedRowKeysChanged={onSelectedSurfacesChanged}
+            selectionMode={onSelectedSurfacesChanged ? 'multiple' : 'none'}
         />
     )
 }

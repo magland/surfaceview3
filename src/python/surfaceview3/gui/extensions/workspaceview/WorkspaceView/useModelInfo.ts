@@ -7,7 +7,7 @@ type SurfaceInfo = {
     numFaces: number
 }
 
-type VectorField3DInfo = {
+export type VectorField3DInfo = {
     uri: string
     nx: number
     ny: number

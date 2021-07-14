@@ -19,7 +19,7 @@ export interface HistoryInterface {
 }
 
 const ModelsView: FunctionComponent<WorkspaceViewProps> = ({ workspace, workspaceDispatch, workspaceRoute, workspaceRouteDispatch, width=500, height=500 }) => {
-  const handleModelSelected = useCallback((modelId: string) => {
+  const handleModelClicked = useCallback((modelId: string) => {
       workspaceRouteDispatch({
         type: 'gotoModelPage',
         modelId
@@ -45,7 +45,7 @@ const ModelsView: FunctionComponent<WorkspaceViewProps> = ({ workspace, workspac
         <div><Button onClick={showWorkspaceSettings}>Set workspace permissions</Button></div>
         <ModelsTable
             models={workspace.models}
-            onModelSelected={handleModelSelected}
+            onModelClicked={handleModelClicked}
             onDeleteModels={readOnly ? undefined : handleDeleteModels}
         />
       </div>

@@ -3,14 +3,23 @@ import { channelName } from 'kachery-js/types/kacheryTypes';
 import { useFetchCache, useKacheryNode } from 'kachery-react';
 import TaskStatusView from 'kachery-react/components/TaskMonitor/TaskStatusView';
 import initiateTask from 'kachery-react/initiateTask';
-import React, { FunctionComponent, useMemo, useState } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { WorkspaceModel } from '../../../pluginInterface/workspaceReducer';
 import { WorkspaceViewProps } from '../../../pluginInterface/WorkspaceViewPlugin';
 import ComponentSelector from './ComponentSelector';
 import PlaneSelector from './PlaneSelector';
 import RealImagSelector from './RealImagSelector';
+import { SliceSelection, SliceSelectionDispatch } from './sliceSelection';
+import { AffineTransformation3D, identityAffineTransformation3D } from './SlicesView/mainLayer';
 import SlicesView, { SliceDataQuery } from './SlicesView/SlicesView';
 import useModelInfo from './useModelInfo';
+
+type Props = WorkspaceViewProps & {
+  modelId: string
+  vectorField3DName: string
+  sliceSelection: SliceSelection
+  sliceSelectionDispatch: SliceSelectionDispatch
+}
 
 export interface LocationInterface {
   pathname: string
@@ -67,23 +76,36 @@ const getSliceData = async (args: {kacheryNode: KacheryNode | undefined, vectorF
   })
 }
 
-
-const ModelVectorField3DView: FunctionComponent<WorkspaceViewProps & {modelId: string, vectorField3DName: string}> = ({ modelId, vectorField3DName, workspace, workspaceDispatch, workspaceRoute, workspaceRouteDispatch, width=500, height=500 }) => {
+const ModelVectorField3DView: FunctionComponent<Props> = ({ modelId, vectorField3DName, workspace, workspaceDispatch, workspaceRoute, workspaceRouteDispatch, width=500, height=500, sliceSelection, sliceSelectionDispatch }) => {
   const model = useMemo((): WorkspaceModel | undefined => (
     workspace.models.filter(x => (x.modelId === modelId))[0]
   ), [workspace, modelId])
-  const [currentPlane, setCurrentPlane] = useState<'XY' | 'XZ' | 'YZ'>('XY')
   const {modelInfo, task: modelInfoTask} = useModelInfo(model?.uri)
   const vfInfo = modelInfo?.vectorfield3ds[vectorField3DName]
   const uri = vfInfo?.uri
   const kacheryNode = useKacheryNode()
 
-  const [currentComponent, setCurrentComponent] = useState<number | undefined>(0)
   const componentChoices = useMemo(() => (
     vfInfo ? [...Array(vfInfo.dim).keys()] : undefined
   ), [vfInfo])
 
   const [realImagIndex, setRealImagIndex] = useState<number>(0)
+
+  const currentPlane = sliceSelection.plane
+  const currentComponent = sliceSelection.component
+  const currentSliceIndex = sliceSelection.sliceIndex
+  const setCurrentSliceIndex = useCallback((sliceIndex: number | undefined) => {
+      sliceSelectionDispatch({type: 'setSliceIndex', sliceIndex})
+    }, [sliceSelectionDispatch])
+  const setCurrentComponent = useCallback((component: number | undefined) => {
+    sliceSelectionDispatch({type: 'setComponent', component})
+  }, [sliceSelectionDispatch])
+  const setCurrentPlane = useCallback((plane: 'XY' | 'XZ' | 'YZ') => {
+    sliceSelectionDispatch({type: 'setPlane', plane})
+  }, [sliceSelectionDispatch])
+  useEffect(() => {
+    sliceSelectionDispatch({type: 'setVectorField3DInfo', info: vfInfo})
+  }, [vfInfo, sliceSelectionDispatch])
 
   const fetch = useMemo(() => (async (query: SliceDataQuery) => {
     switch(query.type) {
@@ -118,13 +140,25 @@ const ModelVectorField3DView: FunctionComponent<WorkspaceViewProps & {modelId: s
   }), [kacheryNode, uri, currentPlane, currentComponent, realImagIndex])
   const sliceData = useFetchCache<SliceDataQuery>(fetch)
 
-  const {nx, ny, numSlices} = useMemo(() => {
-    if (!vfInfo) return {nx: 0, ny: 0, numSlices: 0}
-    if (currentPlane === 'XY') return {nx: vfInfo.nx, ny: vfInfo.ny, numSlices: vfInfo.nz}
-    else if (currentPlane === 'XZ') return {nx: vfInfo.nx, ny: vfInfo.nz, numSlices: vfInfo.ny}
-    else if (currentPlane === 'YZ') return {nx: vfInfo.ny, ny: vfInfo.nz, numSlices: vfInfo.nx}
+  const {nx, ny, numSlices, affineTransformation} = useMemo(() => {
+    if (!vfInfo) return {nx: 0, ny: 0, numSlices: 0, affineTransformation: identityAffineTransformation3D}
+    if (currentPlane === 'XY') {
+      const affineTransformation = vfInfo.affineTransformation
+      return {nx: vfInfo.nx, ny: vfInfo.ny, numSlices: vfInfo.nz, affineTransformation}
+    }
+    else if (currentPlane === 'XZ') {
+      const affineTransformation = vfInfo.affineTransformation.map(row => ([row[0], row[2], row[1], row[3]])) as any as AffineTransformation3D
+      return {nx: vfInfo.nx, ny: vfInfo.nz, numSlices: vfInfo.ny, affineTransformation}
+    }
+    else if (currentPlane === 'YZ') {
+      const affineTransformation = vfInfo.affineTransformation.map(row => ([row[1], row[2], row[0], row[3]])) as any as AffineTransformation3D
+      return {nx: vfInfo.ny, ny: vfInfo.nz, numSlices: vfInfo.nx, affineTransformation}
+    }
     else throw Error('Unexpected plane.')
   }, [vfInfo, currentPlane])
+  useEffect(() => {
+    sliceSelectionDispatch({type: 'setSliceIndex', sliceIndex: undefined})
+  }, [numSlices, sliceSelectionDispatch])
 
   // const realImagIndex = 0 // 0 for real, 1 for imag, 2 for abs
   if (!model) return <span>Model not found.</span>
@@ -134,15 +168,18 @@ const ModelVectorField3DView: FunctionComponent<WorkspaceViewProps & {modelId: s
   }
   return (
     <div>
-      <h3>Vector field: {model.label} ({model.modelId}) {vectorField3DName}</h3>
+      <h3>{vectorField3DName}</h3>
       <SlicesView
         numSlices={numSlices}
         nx={nx}
         ny={ny}
+        affineTransformation={affineTransformation}
         width={300}
         height={300}
         valueRange={vfInfo.valueRange}
         sliceData={sliceData}
+        currentSliceIndex={currentSliceIndex}
+        onCurrentSliceChanged={setCurrentSliceIndex}
       />
       {
         componentChoices && (

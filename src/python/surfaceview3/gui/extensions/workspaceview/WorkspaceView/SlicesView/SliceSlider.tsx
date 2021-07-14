@@ -1,5 +1,7 @@
 import Slider from '@material-ui/core/Slider';
 import React, { FunctionComponent, useCallback } from 'react';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 function valuetext(value: number) {
   return `Slice ${value}`;
@@ -14,17 +16,34 @@ type Props = {
 
 const SliceSlider: FunctionComponent<Props> = ({ width, numSlices, currentSlice, onCurrentSliceChanged }) => {
 
+  const [internalValue, setInternalValue] = useState(currentSlice)
+
+  useEffect(() => {
+    let canceled = false
+    setTimeout(() => {
+      if (canceled) return
+      onCurrentSliceChanged(internalValue)
+    }, 300)
+    return () => {
+      canceled = true
+    }
+  }, [internalValue, onCurrentSliceChanged])
+
+  useEffect(() => {
+    setInternalValue(currentSlice)
+  }, [currentSlice])
+
   const handleChange = useCallback(
     (event: React.ChangeEvent<{}>, value: number | number[]) => {
-      onCurrentSliceChanged(value as any as number)
+      setInternalValue(value as any as number)
     },
-    [onCurrentSliceChanged],
+    []
   )
 
   return (
     <div style={{ width }}>
       <Slider
-        value={currentSlice}
+        value={internalValue}
         onChange={handleChange}
         getAriaValueText={valuetext}
         valueLabelDisplay="auto"

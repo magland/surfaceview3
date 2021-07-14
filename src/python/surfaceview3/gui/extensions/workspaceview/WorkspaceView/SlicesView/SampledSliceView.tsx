@@ -20,6 +20,9 @@ const SampledSliceView: FunctionComponent<Props> = ({width, height, sampledSlice
     const mainLayer = useLayer(createMainLayer, mainLayerProps)
     const layers = useLayers([mainLayer])
 
+    // console.log('--- sampled slice view', sampledSlice?.slice)
+    // console.log(JSON.stringify(sampledSlice?.slice))
+
     return (
         <CanvasWidget
             layers={layers}

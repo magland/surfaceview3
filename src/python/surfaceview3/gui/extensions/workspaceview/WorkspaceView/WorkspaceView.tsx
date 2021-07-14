@@ -1,9 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { WorkspaceViewProps } from '../../../pluginInterface/WorkspaceViewPlugin';
 import ModelsView from './ModelsView';
+import ModelSyncView from './ModelSyncView';
 import ModelView from './ModelView';
-import ModelSurfaceView from './ModelSurfaceView'
-import ModelVectorField3DView from './ModelVectorField3DView';
 
 export interface LocationInterface {
   pathname: string
@@ -25,15 +24,22 @@ const WorkspaceView: FunctionComponent<WorkspaceViewProps> = ({ workspace, works
   }
   else if (workspaceRoute.page === 'modelSurface') {
     return (
-      <ModelSurfaceView
-        {...{modelId: workspaceRoute.modelId, surfaceName: workspaceRoute.surfaceName, workspace, workspaceDispatch, workspaceRoute, workspaceRouteDispatch, width, height}}
+      <ModelSyncView
+        {...{modelId: workspaceRoute.modelId, vectorField3DNames: [], surfaceNames: [workspaceRoute.surfaceName], workspace, workspaceDispatch, workspaceRoute, workspaceRouteDispatch, width, height}}
       />
     )
   }
   else if (workspaceRoute.page === 'modelVectorField3D') {
     return (
-      <ModelVectorField3DView
-        {...{modelId: workspaceRoute.modelId, vectorField3DName: workspaceRoute.vectorField3DName, workspace, workspaceDispatch, workspaceRoute, workspaceRouteDispatch, width, height}}
+      <ModelSyncView
+        {...{modelId: workspaceRoute.modelId, vectorField3DNames: [workspaceRoute.vectorField3DName], surfaceNames: [], workspace, workspaceDispatch, workspaceRoute, workspaceRouteDispatch, width, height}}
+      />
+    )
+  }
+  else if (workspaceRoute.page === 'modelSyncView') {
+    return (
+      <ModelSyncView
+        {...{modelId: workspaceRoute.modelId, vectorField3DNames: workspaceRoute.vectorField3DNames, surfaceNames: workspaceRoute.surfaceNames, workspace, workspaceDispatch, workspaceRoute, workspaceRouteDispatch, width, height}}
       />
     )
   }

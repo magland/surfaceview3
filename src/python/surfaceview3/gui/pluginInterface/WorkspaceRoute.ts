@@ -2,9 +2,9 @@ import { ChannelName, isFeedId } from 'kachery-js/types/kacheryTypes'
 import { parseWorkspaceUri } from 'labbox-react'
 import QueryString from 'querystring'
 
-type Page = 'workspace' | 'model' | 'modelSurface' | 'modelVectorField3D'
+type Page = 'workspace' | 'model' | 'modelSurface' | 'modelVectorField3D' | 'modelSyncView'
 export const isWorkspacePage = (x: string): x is Page => {
-    return ['workspace', 'model', 'modelSurface', 'modelVectorField3D'].includes(x)
+    return ['workspace', 'model', 'modelSurface', 'modelVectorField3D', 'modelSyncView'].includes(x)
 }
 
 type WorkspaceMainRoute = {
@@ -32,7 +32,15 @@ type WorkspaceModelVectorField3DRoute = {
     modelId: string
     vectorField3DName: string
 }
-export type WorkspaceRoute = WorkspaceMainRoute | WorkspaceModelRoute | WorkspaceModelSurfaceRoute | WorkspaceModelVectorField3DRoute
+type WorkspaceModelSyncViewRoute = {
+    workspaceUri?: string
+    channelName?: ChannelName
+    page: 'modelSyncView'
+    modelId: string
+    vectorField3DNames: string[]
+    surfaceNames: string[]
+}
+export type WorkspaceRoute = WorkspaceMainRoute | WorkspaceModelRoute | WorkspaceModelSurfaceRoute | WorkspaceModelVectorField3DRoute | WorkspaceModelSyncViewRoute
 type GotoMainPageAction = {
     type: 'gotoMainPage'
 }
@@ -50,7 +58,13 @@ type GotoModelVectorField3DPageAction = {
     modelId: string
     vectorField3DName: string
 }
-export type WorkspaceRouteAction = GotoMainPageAction | GotoModelPageAction | GotoModelSurfacePageAction | GotoModelVectorField3DPageAction
+type GotoModelSyncViewPageAction = {
+    type: 'gotoModelSyncViewPage'
+    modelId: string
+    vectorField3DNames: string[]
+    surfaceNames: string[]
+}
+export type WorkspaceRouteAction = GotoMainPageAction | GotoModelPageAction | GotoModelSurfacePageAction | GotoModelVectorField3DPageAction | GotoModelSyncViewPageAction
 export type WorkspaceRouteDispatch = (a: WorkspaceRouteAction) => void
 
 export interface LocationInterface {
@@ -105,6 +119,16 @@ export const routeFromLocation = (location: LocationInterface): WorkspaceRoute =
                     vectorField3DName: pathList[5]
                 }
             }
+            else if (pathList[4] === 'syncView') {
+                return {
+                    workspaceUri,
+                    channelName,
+                    page: 'modelSyncView',
+                    modelId,
+                    vectorField3DNames: ((query['vf3'] || '') as string).split(','),
+                    surfaceNames: ((query['s'] || '') as string).split(',')
+                }
+            }
             else {
                 return {
                     workspaceUri,
@@ -150,6 +174,19 @@ export const locationFromRoute = (route: WorkspaceRoute) => {
             pathname: `/workspace/model/${route.modelId}/vectorField3D/${route.vectorField3DName}`,
             search: queryString(queryParams)
         }
+        case 'modelSyncView': {
+            const q = {...queryParams}
+            if (route.surfaceNames.length > 0) {
+                q['s'] = route.surfaceNames.join(',')
+            }
+            if (route.vectorField3DNames.length > 0) {
+                q['vf3'] = route.vectorField3DNames.join(',')
+            }
+            return {
+                pathname: `/workspace/model/${route.modelId}/syncView`,
+                search: queryString(q)
+            }
+        }
         default: return {
             pathname: `/`,
             search: queryString(queryParams)
@@ -192,6 +229,14 @@ export const workspaceRouteReducer = (s: WorkspaceRoute, a: WorkspaceRouteAction
             page: 'modelVectorField3D',
             modelId: a.modelId,
             vectorField3DName: a.vectorField3DName,
+            workspaceUri: s.workspaceUri,
+            channelName: s.channelName
+        }; break;
+        case 'gotoModelSyncViewPage': newRoute = {
+            page: 'modelSyncView',
+            modelId: a.modelId,
+            vectorField3DNames: a.vectorField3DNames,
+            surfaceNames: a.surfaceNames,
             workspaceUri: s.workspaceUri,
             channelName: s.channelName
         }; break;

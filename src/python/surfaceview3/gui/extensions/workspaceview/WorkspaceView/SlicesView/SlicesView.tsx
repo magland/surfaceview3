@@ -1,7 +1,7 @@
 import { FetchCache } from 'kachery-react/useFetchCache'
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react'
+import React, { FunctionComponent, useMemo, useState } from 'react'
 import BrightnessSlider from './BrightnessSlider'
-import { identityAffineTransformation3D, SampledSlice } from './mainLayer'
+import { AffineTransformation3D, SampledSlice } from './mainLayer'
 import SampledSliceView from './SampledSliceView'
 import SliceSlider from './SliceSlider'
 
@@ -14,15 +14,16 @@ type Props = {
     nx: number
     ny: number
     numSlices: number
+    affineTransformation: AffineTransformation3D
     width: number
     height: number
     sliceData: FetchCache<SliceDataQuery>
     valueRange: {min: number, max: number}
+    currentSliceIndex: number | undefined
+    onCurrentSliceChanged: (index: number) => void
 }
 
-const SlicesView: FunctionComponent<Props> = ({nx, ny, numSlices, width, height, sliceData, valueRange}) => {
-    const [currentSliceIndex, setCurrentSliceIndex] = useState<number | undefined>(undefined)
-
+const SlicesView: FunctionComponent<Props> = ({nx, ny, numSlices, affineTransformation, width, height, sliceData, valueRange, currentSliceIndex, onCurrentSliceChanged}) => {
     const [brightness, setBrightness] = useState<number>(50)
 
     const defaultSliceIndex = numSlices ? Math.floor(numSlices / 2) : 0
@@ -36,21 +37,25 @@ const SlicesView: FunctionComponent<Props> = ({nx, ny, numSlices, width, height,
     }, [valueRange, brightness])
 
 
+    const sliceIndex = currentSliceIndex ?? defaultSliceIndex
     const d: number[][] | undefined = sliceData.get({
         type: 'getSliceData',
-        sliceIndex: currentSliceIndex ?? defaultSliceIndex
+        sliceIndex
     })
+    const A = affineTransformation
+    const sliceAffineTransformation = [
+        [A[0][0], A[0][1], A[0][2], A[0][3] + sliceIndex * A[0][2]],
+        [A[1][0], A[1][1], A[1][2], A[1][3] + sliceIndex * A[1][2]],
+        [A[2][0], A[2][1], A[2][2], A[2][3] + sliceIndex * A[2][2]]
+    ] as any as AffineTransformation3D
     const currentSliceData: SampledSlice | undefined = d ? {
         data: d,
         slice: {
             nx,
             ny,
-            transformation: identityAffineTransformation3D
+            transformation: sliceAffineTransformation
         } 
     } : undefined
-    useEffect(() => {
-        setCurrentSliceIndex(undefined)
-    }, [numSlices])
 
     return (
         <div style={{margin: 30}}>
@@ -64,7 +69,7 @@ const SlicesView: FunctionComponent<Props> = ({nx, ny, numSlices, width, height,
                 width={width}
                 numSlices={numSlices}
                 currentSlice={currentSliceIndex ?? defaultSliceIndex}
-                onCurrentSliceChanged={setCurrentSliceIndex}
+                onCurrentSliceChanged={onCurrentSliceChanged}
             />
             <BrightnessSlider
                 width={width}
