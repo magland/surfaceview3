@@ -27,8 +27,8 @@ class VectorField3D:
         dz = self._zgrid[1] - self._zgrid[0]
         return np.array([
             [dx, 0, 0, x0],
-            [dy, 0, 0, y0],
-            [dz, 0, 0, z0]
+            [0, dy, 0, y0],
+            [0, 0, dz, z0]
         ], dtype=np.float32)
     @property
     def ygrid(self) -> np.ndarray:
