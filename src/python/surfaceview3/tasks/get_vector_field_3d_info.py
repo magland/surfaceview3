@@ -3,9 +3,11 @@ import hither2 as hi
 import kachery_client as kc
 import surfaceview3
 from surfaceview3.config import job_cache, job_handler
+from surfaceview3.tasks.serialize import serialize
 from surfaceview3.workspace_list import WorkspaceList
 
 @hi.function('get_vector_field_3d_info', '0.1.0')
+@serialize
 def get_vector_field_3d_info(vector_field_3d_uri: str):
     V = surfaceview3.VectorField3D(vector_field_3d_uri)
     return dict({

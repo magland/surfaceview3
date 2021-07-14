@@ -3,10 +3,12 @@ import hither2 as hi
 import kachery_client as kc
 import surfaceview3
 from surfaceview3.config import job_cache, job_handler
+from surfaceview3.tasks.serialize import serialize
 from surfaceview3.workspace_list import WorkspaceList
 import kachery_client as kc
 
-@hi.function('get_model_info', '0.1.8')
+@hi.function('get_model_info', '0.1.9')
+@serialize
 def get_model_info(model_uri: str):
     model_object = kc.load_json(model_uri)
     if not model_object:
@@ -30,12 +32,13 @@ def get_model_info(model_uri: str):
             'nx': len(v.xgrid),
             'ny': len(v.ygrid),
             'nz': len(v.zgrid),
+            'affineTransformation': v.affine_transformation,
             'dim': v.values.shape[0],
             'valueRange': {'min': np.min(v.values.real), 'max': np.max(v.values.real)}
         }
     return ret
 
-@kc.taskfunction('get_model_info.8', type='pure-calculation')
+@kc.taskfunction('get_model_info.9', type='pure-calculation')
 def task_get_model_info(model_uri: str):
     with hi.Config(job_handler=job_handler.misc, job_cache=job_cache):
         return hi.Job(get_model_info, {'model_uri': model_uri})

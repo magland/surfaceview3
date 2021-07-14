@@ -18,6 +18,19 @@ class VectorField3D:
     def xgrid(self) -> np.ndarray:
         return self._xgrid
     @property
+    def affine_transformation(self) -> np.ndarray:
+        x0 = self._xgrid[0]
+        y0 = self._ygrid[0]
+        z0 = self._zgrid[0]
+        dx = self._xgrid[1] - self._xgrid[0]
+        dy = self._ygrid[1] - self._ygrid[0]
+        dz = self._zgrid[1] - self._zgrid[0]
+        return np.array([
+            [dx, 0, 0, x0],
+            [dy, 0, 0, y0],
+            [dz, 0, 0, z0]
+        ])
+    @property
     def ygrid(self) -> np.ndarray:
         return self._ygrid
     @property

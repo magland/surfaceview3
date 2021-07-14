@@ -1,4 +1,5 @@
 import { useChannel, usePureCalculationTask } from "kachery-react"
+import { AffineTransformation3D } from "./SlicesView/mainLayer"
 
 type SurfaceInfo = {
     uri: string
@@ -12,6 +13,7 @@ type VectorField3DInfo = {
     ny: number
     nz: number
     dim: number
+    affineTransformation: AffineTransformation3D
     valueRange: {min: number, max: number}
 }
 
@@ -22,7 +24,7 @@ export type ModelInfo = {
 
 const useModelInfo = (modelUri: string | undefined) => {
     const {channelName} = useChannel()
-    const {returnValue: modelInfo, task} = usePureCalculationTask<ModelInfo>(modelUri ? 'get_model_info.8' : '', {model_uri: modelUri}, {channelName})
+    const {returnValue: modelInfo, task} = usePureCalculationTask<ModelInfo>(modelUri ? 'get_model_info.9' : '', {model_uri: modelUri}, {channelName})
     return {modelInfo, task}
 }
 

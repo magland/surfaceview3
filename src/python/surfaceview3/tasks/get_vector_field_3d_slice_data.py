@@ -3,9 +3,11 @@ import hither2 as hi
 import kachery_client as kc
 import surfaceview3
 from surfaceview3.config import job_cache, job_handler
+from surfaceview3.tasks.serialize import serialize
 from surfaceview3.workspace_list import WorkspaceList
 
 @hi.function('get_vector_field_3d_slice_data', '0.1.3')
+@serialize
 def get_vector_field_3d_slice_data(vector_field_3d_uri: str, plane: str, slice_index: int):
     V = surfaceview3.VectorField3D(vector_field_3d_uri)
     if plane == 'XY':
