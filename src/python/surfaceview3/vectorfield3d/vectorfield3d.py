@@ -29,7 +29,7 @@ class VectorField3D:
             [dx, 0, 0, x0],
             [dy, 0, 0, y0],
             [dz, 0, 0, z0]
-        ])
+        ], dtype=np.float32)
     @property
     def ygrid(self) -> np.ndarray:
         return self._ygrid

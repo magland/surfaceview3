@@ -24,7 +24,7 @@ export type ModelInfo = {
 
 const useModelInfo = (modelUri: string | undefined) => {
     const {channelName} = useChannel()
-    const {returnValue: modelInfo, task} = usePureCalculationTask<ModelInfo>(modelUri ? 'get_model_info.9' : '', {model_uri: modelUri}, {channelName})
+    const {returnValue: modelInfo, task} = usePureCalculationTask<ModelInfo>(modelUri ? 'get_model_info.10' : '', {model_uri: modelUri}, {channelName})
     return {modelInfo, task}
 }
 

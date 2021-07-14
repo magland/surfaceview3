@@ -38,7 +38,7 @@ def get_model_info(model_uri: str):
         }
     return ret
 
-@kc.taskfunction('get_model_info.9', type='pure-calculation')
+@kc.taskfunction('10', type='pure-calculation')
 def task_get_model_info(model_uri: str):
     with hi.Config(job_handler=job_handler.misc, job_cache=job_cache):
         return hi.Job(get_model_info, {'model_uri': model_uri})
