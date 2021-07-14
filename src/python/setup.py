@@ -5,6 +5,7 @@ setup(
     scripts=[
         'bin/surfaceview3-start-backend'
     ],
+    include_package_data = True,
     install_requires=[
         'click',
         'hither'

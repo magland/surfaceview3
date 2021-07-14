@@ -1,1 +1,1 @@
-recursive-include surfaceview3 *json
+include surfaceview3/backend/task_function_ids.json
